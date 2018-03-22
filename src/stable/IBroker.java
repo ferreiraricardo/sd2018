@@ -13,4 +13,6 @@ public interface IBroker {
     
     public void summonHorsesToPaddock();
     
+    public void waitForProceedToPaddock();
+    
 }
