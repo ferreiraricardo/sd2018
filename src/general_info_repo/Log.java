@@ -24,7 +24,7 @@ import entities.SpectatorState;
  */
 public class Log {
     
-    
+    private final RaceDay raceday = RaceDay.getInstance();
     private final File log;
     
     private static PrintWriter pw;
@@ -36,7 +36,7 @@ public class Log {
         if(filename.length()==0){
             Date today = Calendar.getInstance().getTime();
             SimpleDateFormat date = new SimpleDateFormat("yyyMMddhhmmss");
-            filename = "Race_" + date.format(today) + ".log";
+            filename = "RaceDay_" + date.format(today) + ".log";
         }
         this.log = new File(filename);
     }
@@ -110,5 +110,121 @@ public class Log {
         pw.println("Ps# - horse/jockey pair track position in present race (# - 0 .. 3)");
         pw.println("SD# - horse/jockey pair standing at the end of present race (# - 0 .. 3)");
                 
+    }
+    
+    public synchronized void newRaceDay(){
+        this.printStatesLine();
+    }
+    
+    public synchronized void initBrokerState(BrokerState state){
+        this.raceday.setBrokerState(state);
+    }
+    
+    public synchronized void setBrokerState(BrokerState state){
+        BrokerState tmp = this.raceday.getBrokerState();
+        this.raceday.setBrokerState(state);
+        if(tmp!=state){
+            this.printStatesLine();
+        }
+    }
+    
+    public synchronized void initHorses(HorsesState state, int id, int md){
+        this.raceday.setHorsesState(id, state);
+        this.raceday.setHorsesSpeed(id, md);
+    }
+    
+    public synchronized int getHorsesMaxSpeed(int id){
+        return this.raceday.getHorsesSpeed(id);
+    }
+    
+    public synchronized void setHorsesState(HorsesState state, int id){
+        HorsesState tmp = this.raceday.getHorsesState(id);
+        this.raceday.setHorsesState(id, state);
+        if(tmp!=state){
+            this.printStatesLine();
+        }
+    }
+    
+    public synchronized void initSpectators(SpectatorState state, int id, Double mb){
+        this.raceday.setSpectatorWallet(id, mb);
+        this.raceday.setSpectatorState(id, state);        
+    }
+    
+    public synchronized void setSpectatorState(SpectatorState state, int id){
+        SpectatorState tmp= this.raceday.getSpectatorState(id);
+        this.raceday.setSpectatorState(id, state);
+        if(tmp!=state){
+            this.printStatesLine();
+        }    
+    }
+    
+    public synchronized void updateSpectatorWallet(int id, double money){
+        this.raceday.setSpectatorWallet(id, money);
+    }
+    
+    public synchronized double getSpecatorWallet(int id){
+       return this.raceday.getSpectatorWallet(id);
+       
+    }
+    
+    public synchronized void updateSpecBetHorse(int id_spec, int id_horse){
+        this.raceday.setSpecBetHorse(id_spec, id_horse);
+    }
+    
+    public synchronized void updateSpecBetMoney(int id, Double money){
+        this.raceday.setSpecBetMoney(id, money);
+    }
+    
+    public synchronized void updateHorseOdds(int id, double odd){
+        this.raceday.setHorsesOdds(id, odd);
+    }
+    
+    public synchronized int getBetHorse(int id){
+        return this.raceday.getSpectatorBetHorse(id);
+     
+    }
+    
+    public synchronized double getBetMoney(int id){
+     return this.raceday.getSpectatorBetMoney(id);
+    }
+    
+    public synchronized void updateHorseDistance(int id, int dist){
+        this.raceday.setHorseDistance(id, dist);
+    }
+    
+    public synchronized void updateHorseMoves(int id, int moves){
+        this.raceday.setHorseMoves(id, moves);
+    }
+    
+    
+    public synchronized int getHorseDistance(int id){
+        return this.raceday.getHorseDistance(id);
+    }
+    
+    public synchronized int getHorseMoves(int id){
+        return this.raceday.getHorseMoves(id);
+    }
+    
+    private void printStatesLine(){
+        pw.print(this.raceday.getBrokerState());
+        pw.print("  ");
+        
+        for(int i=1; i<=4; i++){
+            pw.print(this.raceday.getSpectatorState(i));
+            pw.print(" ");
+            pw.print(this.raceday.getSpectatorWallet(i));
+            pw.print("  ");
+        }
+        
+        pw.print(this.raceday.getRaceNumber());
+        pw.print(" ");
+        
+        for(int i=1; i<=4; i++){
+            pw.print(this.raceday.getHorsesState(i));
+            pw.print(" ");
+            pw.print(this.raceday.getHorsesSpeed(i));
+            pw.print(" ");
+        }
+       
     }
 }   

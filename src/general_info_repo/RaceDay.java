@@ -25,6 +25,7 @@ public class RaceDay {
     public static final int RACE_DISTANCE = 100;
     
     private BrokerState broker_state;
+    private int race_number;
     private final HashMap<Integer, HorsesState> horses_state;
     private final HashMap<Integer, SpectatorState> spectator_state;
     private final HashMap<Integer, Integer> horses_position;
@@ -32,6 +33,9 @@ public class RaceDay {
     private final HashMap<Integer, Double> spec_bet_money;
     private final HashMap<Integer, Integer> horses_speed;
     private final HashMap<Integer, Double> horses_odds;
+    private final HashMap<Integer, Double> spectator_wallet;
+    private final HashMap<Integer, Integer> horse_distance;
+    private final HashMap<Integer, Integer> horse_moves;
     
     
     
@@ -39,6 +43,7 @@ public class RaceDay {
     
     
     private RaceDay(){
+        this.race_number=0;
         this.horses_state=new HashMap<>();
         this.spectator_state=new HashMap<>();
         this.horses_position=new HashMap<>();
@@ -46,6 +51,9 @@ public class RaceDay {
         this.spec_bet_money=new HashMap<>();
         this.horses_speed= new HashMap<>();
         this.horses_odds = new HashMap<>();
+        this.spectator_wallet= new HashMap<>();
+        this.horse_distance= new HashMap<>();
+        this.horse_moves = new HashMap<>();
     }
     
     
@@ -119,6 +127,46 @@ public class RaceDay {
         
     }
     
+    public synchronized void setSpectatorWallet(int id, double money){
+        if(this.spectator_wallet.containsKey(id)){
+            this.spectator_wallet.replace(id, money);
+        }else{
+            this.spectator_wallet.put(id,money);
+        }
+    }
+    
+    public synchronized void setRaceNumber(int n){
+        this.race_number=n;
+    }
+    
+    public synchronized void setHorseDistance(int id, int dist){
+        if(this.horse_distance.containsKey(id)){
+            this.horse_distance.replace(id, dist);
+        }else{
+            this.horse_distance.put(id, dist);
+        }
+    }
+    
+    public synchronized void setHorseMoves(int id, int move){
+        if(this.horse_moves.containsKey(id)){
+            this.horse_moves.replace(id, move);
+        }else{
+            this.horse_moves.put(id, move);
+        }
+    }
+    
+    public synchronized int getHorseDistance(int id){
+        return this.horse_distance.get(id);
+    }
+    
+    public synchronized int getHorseMoves(int id){
+        return this.horse_moves.get(id);
+    }
+    
+    public synchronized int getRaceNumber(){
+        return this.race_number;
+    }
+    
     public synchronized BrokerState getBrokerState(){
         return broker_state;
     }
@@ -149,5 +197,9 @@ public class RaceDay {
     
     public synchronized Double getHorsesOdds(int id){
         return horses_odds.get(id);
+    }
+    
+    public synchronized Double getSpectatorWallet(int id){
+        return spectator_wallet.get(id);
     }
 }
