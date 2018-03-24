@@ -11,8 +11,8 @@ package betting_centre;
  */
 public interface IBroker {
     
-    public void acceptTheBets(int id);
+    public void acceptTheBets(int id);//waiting for everyone
     
-    public int honnourTheBets(int id);
+    public boolean honnourTheBets(int id);//pay everyone
     
 }

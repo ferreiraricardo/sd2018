@@ -15,7 +15,8 @@ import java.util.logging.Logger;
 public class Stable implements IBroker, IHorses {
     private boolean horsesReady = false;
     private boolean callRace = false;
-    private int count = 0;
+    private boolean endDay = false;
+    private int countCavalos = 0;
     private int orders = -1;
     private final LinkedList<Integer> horses;
     private final Log log;
@@ -31,7 +32,7 @@ public class Stable implements IBroker, IHorses {
     public synchronized void summonHorsesToPaddock(){
         horsesReady = false;
         notifyAll();
-        while(count != 0){
+        while(countCavalos != 0){
             try{
                 wait();
             }catch(InterruptedException ex) {
@@ -59,7 +60,39 @@ public class Stable implements IBroker, IHorses {
     @Override 
     public synchronized void proceedToPaddock(){
         horsesReady=false;
+        countCavalos++;
+        if(countCavalos==4)
+        {
+            horsesReady=true;
+            notifyAll();
+        }      
     }
-
-   
+    
+    public synchronized void proceedToStable(int id){
+        this.callRace = false;
+        horses.add(id);
+        if(countCavalos>0)
+        {
+            countCavalos--;
+            notifyAll();
+        }
+        while(!callRace && !endDay)
+        {
+            try{
+                wait();
+            }catch(InterruptedException ex){
+                Logger.getLogger(Stable.class.getName()).log(Level.SEVERE,null,ex);
+            }
+        }
+        horses.pop();
+        if(horses.size()==4)
+        {
+            callRace=false;
+            notifyAll();
+        }
+        notifyAll();
+    }
+    
+    
 }
+    

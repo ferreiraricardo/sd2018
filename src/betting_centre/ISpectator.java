@@ -11,9 +11,9 @@ package betting_centre;
  */
 public interface ISpectator {
     
-    public int placeABet();
+    public int placeABet(int id);
     
-    public int goCollectTheGains(int id);
+    public double goCollectTheGains(int id);
     
     
 }
