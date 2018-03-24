@@ -20,7 +20,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     private final Log log;
     private boolean betsReady = false;
     private int countCavalos =0;
-    private int nHorsesWait=4;
+    private int nHorsesWait=RaceDay.N_TRACKS;
     Random rand = new Random();
     
     public Paddock(){
