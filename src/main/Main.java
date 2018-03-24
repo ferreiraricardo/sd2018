@@ -48,14 +48,14 @@ public class Main {
         for(int i = 0; i<nHorses;i++){
             Random rand = new Random();
             int md = rand.nextInt(RaceDay.HORSE_MAX_MD+1-RaceDay.HORSE_MIN_MD)+RaceDay.HORSE_MIN_MD;
-            horses[i]= new Horses((paddock.IHorses) paddock, (racing_track.IHorse) racing, (stable.IHorses) stable ,i+1);
+            horses[i]= new Horses((paddock.IHorses) paddock, (racing_track.IHorse) racing, (stable.IHorses) stable ,md, i+1);
         }
         
         spectators = new Spectator[nSpectators];
         for(int i=0; i<nSpectators;i++){
             Random rand1 = new Random();
             int mb = rand1.nextInt(RaceDay.SPEC_MAX_BET+1-RaceDay.SPEC_MIN_BET)+RaceDay.SPEC_MIN_BET;
-            spectators[i]=new Spectator((betting_centre.ISpectator) betting, (control_centre.ISpectator) control, (paddock.ISpectator) paddock, (racing_track.ISpectator) racing, i+1);
+            spectators[i]=new Spectator((betting_centre.ISpectator) betting, (control_centre.ISpectator) control, (paddock.ISpectator) paddock, (racing_track.ISpectator) racing,mb, i+1);
         }
         
         broker.start();

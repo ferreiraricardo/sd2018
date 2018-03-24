@@ -16,10 +16,12 @@ public class Spectator extends Thread {
     private final racing_track.ISpectator racing;
     
     private final int id;
+    private final int mb;
     private SpectatorState state;
     
-    public Spectator(betting_centre.ISpectator betting, control_centre.ISpectator control, paddock.ISpectator paddock, racing_track.ISpectator racing, int id){
+    public Spectator(betting_centre.ISpectator betting, control_centre.ISpectator control, paddock.ISpectator paddock, racing_track.ISpectator racing,int mb, int id){
         this.id = id;
+        this.mb=mb;
         this.control = control;
         this.betting = betting;
         this.paddock = paddock;
