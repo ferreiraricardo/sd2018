@@ -4,10 +4,12 @@
  * and open the template in the editor.
  */
 package paddock;
+import general_info_repo.RaceDay;
 import general_info_repo.Log;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Random;
 
 /**
  *
@@ -19,14 +21,39 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     private boolean betsReady = false;
     private int countCavalos =0;
     private int nHorsesWait=4;
+    Random rand = new Random();
     
     public Paddock(){
         log = Log.getInstance();
         horses = new LinkedList<>();
     }
     @Override
-    public synchronized void goCheckHorses(int id)
-    {  
+    public synchronized int goCheckHorses(int eid)
+    {
+        notifyAll();
+        while(countCavalos<RaceDay.N_TRACKS)
+        {
+            try{
+                wait();
+            }catch(InterruptedException ex3){
+                Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE,null,ex3);       
+            }
+        }
+        double odd = 0;
+        int vHorses = 0;
+        for(int i=0; i<RaceDay.N_TRACKS;i++)
+        {
+            vHorses+=RaceDay.getVelocity(horses.get(i));
+        }
+        for(int j=0; j<RaceDay.N_TRACKS;j++)
+        {
+            odd = RaceDay.getVelocity(j)/vHorses;
+            RaceDay.setHorsesOdds(horses.get(j),odd);
+        }
+        int choice = rand.nextInt(RaceDay.N_TRACKS+1);
+        return choice;
+        
+        
     }
     
     @Override
@@ -93,10 +120,5 @@ public class Paddock implements ISpectator , IHorses, IBroker{
         }
         betsReady=true;
         notifyAll();
-    }
-    
-    @Override
-    public synchronized void waitForNextRace(int id){
-        
     }
 }
