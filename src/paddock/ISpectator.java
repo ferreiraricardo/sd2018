@@ -13,5 +13,5 @@ public interface ISpectator {
     
     public void waitForNextRace(int id);
     
-    public void goCheckHorses(int id);
+    public int goCheckHorses(int id);
 }

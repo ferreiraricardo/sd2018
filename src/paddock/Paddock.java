@@ -30,7 +30,6 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     @Override
     public synchronized int goCheckHorses(int eid)
     {
-        notifyAll();
         while(countCavalos<RaceDay.N_TRACKS)
         {
             try{
@@ -70,8 +69,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     @Override
     public synchronized void proceedToStartLine(int id){
         betsReady=false;
-        countCavalos++;
-        if(countCavalos==4)
+        if(countCavalos==RaceDay.N_TRACKS)
         {
             betsReady=true;
             notifyAll();
@@ -99,7 +97,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE,null,ex1);
             }
               horses.pop();
-        if(horses.size()==4)
+        if(horses.size()==RaceDay.N_TRACKS)
         {
             betsReady=false;
             notifyAll();
@@ -120,5 +118,18 @@ public class Paddock implements ISpectator , IHorses, IBroker{
         }
         betsReady=true;
         notifyAll();
+    }
+    
+    @Override
+    public synchronized void waitForNextRace(int id)
+    {
+        while(!betsReady)
+        {
+            try{
+                wait();
+            }catch(InterruptedException ex4){
+                Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE, null, ex4);
+            }
+        }
     }
 }
