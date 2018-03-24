@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  *
  * @author ricar
  */
-public class Paddock implements ISpectator , IHorses{
+public class Paddock implements ISpectator , IHorses, IBroker{
     private final LinkedList<Integer> horses;
     private final Log log;
     private boolean betsReady = false;
@@ -93,5 +93,10 @@ public class Paddock implements ISpectator , IHorses{
         }
         betsReady=true;
         notifyAll();
+    }
+    
+    @Override
+    public synchronized void waitForNextRace(int id){
+        
     }
 }
