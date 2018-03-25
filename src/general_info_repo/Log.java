@@ -205,6 +205,10 @@ public class Log {
         return this.raceday.getHorseMoves(id);
     }
     
+    public synchronized double getHorseOdds(int id){
+        return this.raceday.getHorsesOdds(id);
+    }
+    
     private void printStatesLine(){
         pw.print(this.raceday.getBrokerState());
         pw.print("  ");

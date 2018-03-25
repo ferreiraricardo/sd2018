@@ -34,6 +34,7 @@ public class Main {
     private static void main(String[] args){
         int nHorses = RaceDay.N_HORSES;
         int nSpectators = RaceDay.N_SPECTATORS;
+        int mb = RaceDay.SPEC_WALLET;
         
         racing = new RacingTrack();
         betting = new BettingCentre();
@@ -53,8 +54,6 @@ public class Main {
         
         spectators = new Spectator[nSpectators];
         for(int i=0; i<nSpectators;i++){
-            Random rand1 = new Random();
-            int mb = rand1.nextInt(RaceDay.SPEC_MAX_BET+1-RaceDay.SPEC_MIN_BET)+RaceDay.SPEC_MIN_BET;
             spectators[i]=new Spectator((betting_centre.ISpectator) betting, (control_centre.ISpectator) control, (paddock.ISpectator) paddock, (racing_track.ISpectator) racing,mb, i+1);
         }
         

@@ -43,7 +43,7 @@ public class Spectator extends Thread {
                     this.state=SpectatorState.APPRAISING_THE_HORSES;
                     break;
                 case APPRAISING_THE_HORSES:
-                    this.betting.placeABet();
+                    this.betting.placeABet(id);
                     this.state=SpectatorState.PLACING_A_BET;
                     break;
                 case PLACING_A_BET:
