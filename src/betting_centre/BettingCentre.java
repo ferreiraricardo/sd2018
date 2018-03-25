@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  *
  * @author ricar
  */
-public class BettingCentre {
+public class BettingCentre implements ISpectator, IBroker {
     private final LinkedList<Object> horses;
     private final Log log;
     private int bCount=0;
@@ -28,7 +28,7 @@ public class BettingCentre {
     }
     
     @Override
-    public synchronized void placeABet(int id) throws InterruptedException
+    public synchronized void placeABet(int id)
     {
         while(log.getRaceState()!=1 || !sBets)
         {
@@ -53,7 +53,11 @@ public class BettingCentre {
         }
         else{
             bCount++;
-            wait();
+           try{
+                wait();
+            }catch(InterruptedException ex24){
+                Logger.getLogger(BettingCentre.class.getName()).log(Level.SEVERE, null, ex24);
+            }
         }
     }
     @Override
@@ -110,5 +114,6 @@ public class BettingCentre {
            }
         }
         notifyAll();
+        return true;
     }
 }

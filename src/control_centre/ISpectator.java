@@ -15,4 +15,6 @@ public interface ISpectator {
     
     public void relaxABit();
     
+    public void goWatchTheRace();
+    
 }

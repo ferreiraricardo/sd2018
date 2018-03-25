@@ -65,6 +65,7 @@ public class Horses extends Thread {
                     break;
                 case AT_THE_FINISH_LINE:
                     this.racing.proceedToStable(id);
+                    this.state=HorsesState.AT_THE_STABLE;
                     break;
             }
             this.log.setHorsesState(state, this.id);

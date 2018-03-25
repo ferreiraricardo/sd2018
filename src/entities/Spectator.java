@@ -41,7 +41,6 @@ public class Spectator extends Thread {
             switch(this.state){
                 case WAITING_FOR_A_RACE_TO_START:
                     this.paddock.waitForNextRace(id);
-                    //quando a corrida é anunciada
                     this.paddock.goCheckHorses(id);
                     this.state=SpectatorState.APPRAISING_THE_HORSES;
                     break;
@@ -56,15 +55,9 @@ public class Spectator extends Thread {
                 case WATCHING_A_RACE:
                     won = this.racing.haveIWon(id);
                     if(!won){
-                        //caso nao queira apostar mais
-                        this.control.relaxABit();
-                        this.state=SpectatorState.CELEBRATING;
-                        //caso ainda queira apostar noutras corridas
                         this.paddock.waitForNextRace(id);
                         this.state=SpectatorState.WAITING_FOR_A_RACE_TO_START;
-                    }
-                    //caso queira recolher os ganhos
-                   
+                    } 
                     this.state=SpectatorState.COLLECTING_THE_GAINS;
                     break;
                 case COLLECTING_THE_GAINS:
