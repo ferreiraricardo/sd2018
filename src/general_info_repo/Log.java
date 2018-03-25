@@ -209,6 +209,14 @@ public class Log {
         return this.raceday.getHorsesOdds(id);
     }
     
+    public synchronized void updateRaceState(int s){
+        this.raceday.setRaceState(s);
+    }
+    
+    public synchronized int getRaceState(){
+        return this.raceday.getRaceState();
+    }
+    
     private void printStatesLine(){
         pw.print(this.raceday.getBrokerState());
         pw.print("  ");
