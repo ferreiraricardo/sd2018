@@ -11,8 +11,5 @@ package racing_track;
  */
 public interface ISpectator {
     
-    public void goWatchTheRace(int id);
-    
-    public boolean haveIWon(int id);
     
 }

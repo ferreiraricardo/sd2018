@@ -18,10 +18,13 @@ import java.util.Random;
 public class Paddock implements ISpectator , IHorses, IBroker{
     private final LinkedList<Integer> horses;
     private final Log log;
+    private boolean startRace = false;
     private boolean betsReady = false;
     private int countCavalos =0;
+    private int countSpec =0;
     private int nHorsesWait=RaceDay.N_TRACKS;
     Random rand = new Random();
+    private boolean horsesReady=false;
     
     public Paddock(){
         log = Log.getInstance();
@@ -30,7 +33,8 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     @Override
     public synchronized int goCheckHorses(int eid)
     {
-        while(countCavalos<RaceDay.N_TRACKS)
+        countSpec++;
+        while(!horsesReady)
         {
             try{
                 wait();
@@ -51,45 +55,36 @@ public class Paddock implements ISpectator , IHorses, IBroker{
             log.updateHorseOdds(horses.get(j),odd);
         }
         int choice = rand.nextInt(RaceDay.N_TRACKS);
+        if(countSpec==RaceDay.N_SPECTATORS)
+        {
+            startRace=true;
+        }
         return choice;
         
         
     }
     
     @Override
-    public synchronized void waitForProceedToStartLine(){
-        while(!this.betsReady){
+    public synchronized void proceedToStartLine(int id)
+    {
+        while(!startRace)
+        {
             try{
                 wait();
-            }catch(InterruptedException ex2) {
-                Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE, null, ex2);
+            }catch(InterruptedException ex30){
+                Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE,null,ex30);
             }
         }
-    }
-    
-    @Override
-    public synchronized void proceedToStartLine(int id){
-        betsReady=false;
-        if(countCavalos==RaceDay.N_TRACKS)
-        {
-            betsReady=true;
-            notifyAll();
-        }
+        notifyAll();
+        
     }
     
     @Override
     public synchronized void proceedToPaddock(int id)
     {
-        
-        this.betsReady=false;
         horses.add(id);
-        countCavalos=horses.size();
-        if(countCavalos>0)
-        {
-            countCavalos--;
-            notifyAll();
-        }
-        while(!betsReady)
+        countCavalos++;
+        while(countCavalos<RaceDay.N_TRACKS)
         {
             try{
                 wait();
@@ -97,34 +92,18 @@ public class Paddock implements ISpectator , IHorses, IBroker{
             {
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE,null,ex1);
             }
-              horses.pop();
-        if(horses.size()==RaceDay.N_TRACKS)
-        {
-            betsReady=false;
-            notifyAll();
         }
+        log.updateRaceState(1);
+        horsesReady=true;
         notifyAll();
-        }
+        
     }
-     @Override
-    public synchronized void summonHorsesToStartLine(){
-        betsReady = false;
-        notifyAll();
-        while(countCavalos != 0){
-            try{
-                wait();
-            }catch(InterruptedException ex) {
-                Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        betsReady=true;
-        notifyAll();
-    }
+    
     
     @Override
     public synchronized void waitForNextRace(int id)
     {
-        while(!betsReady)
+        while(!startRace)
         {
             try{
                 wait();
@@ -132,6 +111,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE, null, ex4);
             }
         }
-        log.updateRaceState(1);
+        notifyAll();
+        
     }
 }

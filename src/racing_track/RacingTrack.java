@@ -24,6 +24,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
     private int cPosition=0;
     private boolean sRace=false;
     private boolean eRace= false;
+    private boolean hAtStartLine =false;
     private int countCavalos=0;
     private int cHorsesMoves=0;
     private final Log log;
@@ -52,11 +53,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
         hPosition+=rand.nextInt(log.getHorsesMaxSpeed(id) -RaceDay.HORSE_MIN_MD)+RaceDay.HORSE_MIN_MD;
         log.updateHorseDistance(id,hPosition);
         log.updateHorseMoves(id,cPosition);
-        if(cHorsesMoves%horses.size()==1)
-        {
-            notifyAll();
-        }
-        else
+        while(cHorsesMoves%RaceDay.N_TRACKS!=1)
         {
            try
            {
@@ -65,8 +62,9 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
                 Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex15);
            }
         }
+        notifyAll();
         
-        ///////////////////////////////////////
+
     }
         
    @Override
@@ -85,23 +83,47 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    @Override
    public synchronized void proceedToStable(int id)
    {
-      
-       if(eRace)
-       {
-           eRace=false;
-           notifyAll();
+      while(!eRace || log.getRaceState()!=3)
+      {
+          try {
+              wait();
+          } catch (InterruptedException ex34) {
+              Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex34);
+          }
+      }
+      horses.remove(id);
+      notifyAll();
+   }
+   public synchronized void proceedToStartLine(int id)
+   {
+       horses.add(id);
+       countCavalos++;
+       while(countCavalos<RaceDay.N_TRACKS){
+           try{
+               wait();
+           }catch(InterruptedException ex32){
+               Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE,null,ex32);
+           }
        }
+       hAtStartLine=true;
+       notifyAll();
    }
    
    @Override
    public synchronized void StartTheRace(int id)
    {
-       countCavalos=horses.size();
-       if(countCavalos==RaceDay.N_TRACKS || log.getRaceState()==2)
+       while(!hAtStartLine)
        {
-           sRace=true;
-           notifyAll();
+           try {
+               wait();
+           } catch (InterruptedException ex33) {
+               Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex33);
+           }
        }
+       log.updateRaceState(2);
+       sRace=true;
+       notifyAll();
+       
    }
    
    @Override
@@ -141,57 +163,16 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    @Override
    public boolean areThereAnyWinners(int id)
    {
-       if(eRace=true)
-       {
-           return true;
-       }
-       else
-       {
-           return false;
-       }
-   }
-   
-   @Override
-   public synchronized void goWatchTheRace(int id)
-   {
        while(!eRace)
        {
            try{
                wait();
-           }catch(InterruptedException ex7)
-           {
-                Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex7);
-
+           }catch(InterruptedException ex31){
+               Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE,null,ex31);
            }
+           return false;
        }
-       
-   }
-   
-   @Override
-   public synchronized boolean haveIWon(int id){//SPECTATORS
-       while(!eRace){
-           try{
-               wait();
-           }catch(InterruptedException ex20){
-               Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex20);
-           }
-       }
-       int sbHorse=log.getBetHorse(id);
-       boolean win=false;
-            for(int i =0;i<horses.size();i++)
-            {
-                if(log.getHorseMoves(sbHorse)<=log.getHorseMoves(horses.get(i)))
-                {
-                   win = true;
-                }
-                else
-                {
-                   win = false;
-                   break;
-                  
-                }
-            }
-            notifyAll();
-            return win;
+       return true;
+      
    }
 }

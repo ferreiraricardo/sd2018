@@ -5,6 +5,7 @@
  */
 package stable;
 import general_info_repo.Log;
+import general_info_repo.RaceDay;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,23 +31,35 @@ public class Stable implements IBroker, IHorses {
     
     @Override
     public synchronized void summonHorsesToPaddock(){
-        horsesReady = false;
-        notifyAll();
-        while(countCavalos != 0){
+        while(callRace){
             try{
                 wait();
             }catch(InterruptedException ex) {
                 Logger.getLogger(Stable.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        callRace=true;
-        orders=0;
         notifyAll();
     }
     
     
     @Override
     public synchronized void waitForProceedToPaddock(){
+          horsesReady=false;
+        if(countCavalos>=RaceDay.N_TRACKS)
+        {
+            horsesReady=true;
+            notifyAll();
+            for(int i=0;i<RaceDay.N_TRACKS;i++)
+            {
+                horses.remove(i);
+                countCavalos--;
+            }
+        } 
+    }
+    
+    
+    @Override 
+    public synchronized void proceedToPaddock(){
         while(!this.horsesReady){
             try{
                 wait();
@@ -54,29 +67,14 @@ public class Stable implements IBroker, IHorses {
                 Logger.getLogger(Stable.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
-    
-    
-    @Override 
-    public synchronized void proceedToPaddock(){
-        horsesReady=false;
-        countCavalos++;
-        if(countCavalos==4)
-        {
-            horsesReady=true;
-            notifyAll();
-        }      
+        callRace=true;
     }
     
     public synchronized void proceedToStable(int id){
         this.callRace = false;
         horses.add(id);
-        if(countCavalos>0)
-        {
-            countCavalos--;
-            notifyAll();
-        }
-        while(!callRace && !endDay)
+        countCavalos++;
+        while(countCavalos<RaceDay.N_TRACKS)
         {
             try{
                 wait();
@@ -84,13 +82,9 @@ public class Stable implements IBroker, IHorses {
                 Logger.getLogger(Stable.class.getName()).log(Level.SEVERE,null,ex);
             }
         }
-        horses.pop();
-        if(horses.size()==4)
-        {
-            callRace=false;
-            notifyAll();
-        }
+        callRace=true;
         notifyAll();
+       
     }
     
     

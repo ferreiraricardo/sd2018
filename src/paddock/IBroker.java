@@ -10,5 +10,4 @@ package paddock;
  * @author ricar
  */
 public interface IBroker {
-   public void summonHorsesToStartLine();
 }
