@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package entities;
-
+import general_info_repo.Log;
 /**
  *
  * @author ricar
@@ -14,6 +14,7 @@ public class Horses extends Thread {
     private final paddock.IHorses paddock;
     private final racing_track.IHorse racing;
     private final stable.IHorses stable;
+    private final Log log;
     
     private final int id;
     private final int md;
@@ -27,7 +28,10 @@ public class Horses extends Thread {
         this.paddock=paddock;
         this.racing=racing;
         this.stable=stable;
+        this.log=Log.getInstance();
         state = HorsesState.AT_THE_STABLE;
+        this.setName("Horse"+this.id);
+        this.log.initHorses(this.state, this.id, this.md);
         
     }
     
@@ -63,6 +67,7 @@ public class Horses extends Thread {
                     this.racing.proceedToStable(id);
                     break;
             }
+            this.log.setHorsesState(state, this.id);
         }
     }
        

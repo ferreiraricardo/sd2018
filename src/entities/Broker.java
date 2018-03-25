@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package entities;
-
+import general_info_repo.Log;
 /**
  *
  * @author ricar
@@ -14,6 +14,7 @@ public class Broker extends Thread {
     private final betting_centre.IBroker betting;
     private final racing_track.IBroker racing;
     private final stable.IBroker stable;
+    private final Log log;
     private BrokerState state;
     
     public Broker(control_centre.IBroker control,  betting_centre.IBroker betting, racing_track.IBroker racing, stable.IBroker stable ){
@@ -21,8 +22,11 @@ public class Broker extends Thread {
         this.betting=betting;
         this.racing=racing;
         this.stable=stable;
-        
+        this.log=Log.getInstance();
+        this.setName("Broker");
         state = BrokerState.OPENING_THE_EVENT;
+        
+        this.log.initBrokerState(state);
     }
     
     @Override
@@ -33,6 +37,7 @@ public class Broker extends Thread {
             switch(this.state){
                 case OPENING_THE_EVENT:
                     this.stable.summonHorsesToPaddock();
+                    this.log.newRaceDay();
                     this.state=BrokerState.ANNOUNCING_NEXT_RACE;
                     break;
                 case ANNOUNCING_NEXT_RACE:
@@ -71,6 +76,7 @@ public class Broker extends Thread {
                     raceOver = true;
                     break;
             }
+            this.log.setBrokerState(state);
         }
     }
     

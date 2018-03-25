@@ -171,7 +171,7 @@ public class Log {
         this.raceday.setSpecBetHorse(id_spec, id_horse);
     }
     
-    public synchronized void updateSpecBetMoney(int id, Double money){
+    public synchronized void updateSpecBetMoney(int id, int money){
         this.raceday.setSpecBetMoney(id, money);
     }
     

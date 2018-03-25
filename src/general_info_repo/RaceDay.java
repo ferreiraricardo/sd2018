@@ -26,11 +26,12 @@ public class RaceDay {
     
     private BrokerState broker_state;
     private int race_number;
+    private int race_state;
     private final HashMap<Integer, HorsesState> horses_state;
     private final HashMap<Integer, SpectatorState> spectator_state;
     private final HashMap<Integer, Integer> horses_position;
     private final HashMap<Integer, Integer> spec_bet_horse;
-    private final HashMap<Integer, Double> spec_bet_money;
+    private final HashMap<Integer, Integer> spec_bet_money;
     private final HashMap<Integer, Integer> horses_speed;
     private final HashMap<Integer, Double> horses_odds;
     private final HashMap<Integer, Double> spectator_wallet;
@@ -44,6 +45,7 @@ public class RaceDay {
     
     private RaceDay(){
         this.race_number=0;
+        this.race_state=0;
         this.horses_state=new HashMap<>();
         this.spectator_state=new HashMap<>();
         this.horses_position=new HashMap<>();
@@ -102,7 +104,7 @@ public class RaceDay {
         }
     }
     
-    public synchronized void setSpecBetMoney(int id_spec, double money){
+    public synchronized void setSpecBetMoney(int id_spec, int money){
         if(this.spec_bet_money.containsKey(id_spec)){
             this.spec_bet_money.replace(id_spec, money);
         }else{
@@ -139,6 +141,12 @@ public class RaceDay {
         this.race_number=n;
     }
     
+    public synchronized void setRaceState(int s){
+        this.race_state=s;
+    }
+    
+    
+    
     public synchronized void setHorseDistance(int id, int dist){
         if(this.horse_distance.containsKey(id)){
             this.horse_distance.replace(id, dist);
@@ -167,6 +175,10 @@ public class RaceDay {
         return this.race_number;
     }
     
+    public synchronized int getRaceState(){
+        return this.race_state;
+    }
+    
     public synchronized BrokerState getBrokerState(){
         return broker_state;
     }
@@ -187,7 +199,7 @@ public class RaceDay {
         return spec_bet_horse.get(id_spec);
     }
     
-    public synchronized double getSpectatorBetMoney(int id_spec){
+    public synchronized int getSpectatorBetMoney(int id_spec){
         return spec_bet_money.get(id_spec);
     }
     

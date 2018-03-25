@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package entities;
-
+import general_info_repo.Log;
 /**
  *
  * @author ricar
@@ -14,25 +14,28 @@ public class Spectator extends Thread {
     private final control_centre.ISpectator control;
     private final paddock.ISpectator paddock;
     private final racing_track.ISpectator racing;
-    
+    private final Log log;
     private final int id;
-    private final int mb;
+    private final double mb;
     private SpectatorState state;
     
-    public Spectator(betting_centre.ISpectator betting, control_centre.ISpectator control, paddock.ISpectator paddock, racing_track.ISpectator racing,int mb, int id){
+    public Spectator(betting_centre.ISpectator betting, control_centre.ISpectator control, paddock.ISpectator paddock, racing_track.ISpectator racing,double mb, int id){
         this.id = id;
         this.mb=mb;
         this.control = control;
         this.betting = betting;
         this.paddock = paddock;
         this.racing = racing;
+        this.log=Log.getInstance();
+        this.setName("Spectator"+this.id);
         state = SpectatorState.WAITING_FOR_A_RACE_TO_START;
+        this.log.initSpectators(this.state, this.id, this.mb);
     }
     
     @Override
     public void run(){
         boolean raceOver = false;
-        boolean won = false;
+        boolean won ;
         
         while(!raceOver){
             switch(this.state){
@@ -61,10 +64,11 @@ public class Spectator extends Thread {
                         this.state=SpectatorState.WAITING_FOR_A_RACE_TO_START;
                     }
                     //caso queira recolher os ganhos
-                    this.betting.goCollectTheGains(id);
+                   
                     this.state=SpectatorState.COLLECTING_THE_GAINS;
                     break;
                 case COLLECTING_THE_GAINS:
+                    this.betting.goCollectTheGains(id);
                     this.control.relaxABit();
                     this.state = SpectatorState.CELEBRATING;
                     
@@ -76,6 +80,7 @@ public class Spectator extends Thread {
                     break;
                         
             }
+            this.log.setSpectatorState(this.state, this.id);
         }
     }
     
