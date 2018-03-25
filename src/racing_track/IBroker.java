@@ -13,7 +13,7 @@ public interface IBroker {
     
     public void StartTheRace(int id);
     
-    public int ReportResults(int id);
+    public int[] ReportResults(int id);
     
     public boolean areThereAnyWinners(int id);
     

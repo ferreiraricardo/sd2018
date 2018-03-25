@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 public class BettingCentre {
     private final LinkedList<Object> horses;
     private final Log log;
+    private boolean sBets=false;
     
     public BettingCentre(){
         log = Log.getInstance();
@@ -26,9 +27,9 @@ public class BettingCentre {
     }
     
     @Override
-    public synchronized void placeABet(int id)
+    public synchronized void placeABet(int id) throws InterruptedException
     {
-        while(log.getRaceState!=1)
+        while(log.getRaceState!=1 || !sBets)
         {
             try{
                 wait();
@@ -36,17 +37,23 @@ public class BettingCentre {
                 Logger.getLogger(BettingCentre.class.getName()).log(Level.SEVERE, null, ex11);
             }
         }
-        Random rand = new Random();
-        int quantity = rand.nextInt(RaceDay.SPEC_MAX_BET-RaceDay.SPEC_MIN_BET)+RaceDay.SPEC_MIN_BET;
-        int horseC = rand.nextInt(RaceDay.N_TRACKS)-1;
-        log.updateSpecBetHorse(id,horseC);
-        log.updateSpecBetMoney(id,quantity);
         double wallet = log.getSpecatorWallet(id);
-        wallet -= quantity;
-        log.updateSpectatorWallet(id, wallet);
-        wait();
+        if(wallet>RaceDay.SPEC_MIN_BET)
+        {
+            Random rand = new Random();
+            int quantity = rand.nextInt(RaceDay.SPEC_MAX_BET-RaceDay.SPEC_MIN_BET)+RaceDay.SPEC_MIN_BET;
+            int horseC = rand.nextInt(RaceDay.N_TRACKS)-1;
+            log.updateSpecBetHorse(id,horseC);
+            log.updateSpecBetMoney(id,quantity);
+            wallet -= quantity;
+            log.updateSpectatorWallet(id, wallet);
+        }
+        else{
+            
+            wait();
+        }
     }
-    public synchronized void goCollectTheGains(int id){
+    public synchronized int goCollectTheGains(int id){
         while(log.getRaceState!=3)
         {
             try
@@ -63,5 +70,39 @@ public class BettingCentre {
         double wallet = log.getSpecatorWallet(id);
         wallet += odd*quantity;
         log.updateSpectatorWallet(id, wallet);
-    } 
+        if(log.getSpecatorWallet(id)<RaceDay.SPEC_MIN_BET){
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+    
+    public void acceptTheBets(int id)
+    {
+        sBets=true;
+        while(!betsDone)
+        {
+            try{
+                wait();
+            }catch(InterruptedException ex16){
+                Logger.getLogger(BettingCentre.class.getName()).log(Level.SEVERE, null, ex16);
+            }
+        }
+        notifyAll();
+    }
+    
+    public boolean honnourTheBets(int id){
+        while(log.getRaceState!=3)
+        {
+           try{
+               wait();
+           }catch(InterruptedException ex19)
+           {
+              Logger.getLogger(BettingCentre.class.getName()).log(Level.SEVERE, null, ex19); 
+           }
+        }
+        notifyAll();
+    }
 }

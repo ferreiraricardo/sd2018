@@ -42,14 +42,15 @@ public class Paddock implements ISpectator , IHorses, IBroker{
         int vHorses = 0;
         for(int i=0; i<RaceDay.N_TRACKS;i++)
         {
-            vHorses+=RaceDay.getVelocity(horses.get(i));
+            vHorses+=log.getHorsesMaxSpeed(horses.get(i));
         }
         for(int j=0; j<RaceDay.N_TRACKS;j++)
         {
-            odd = RaceDay.getVelocity(j)/vHorses;
-            RaceDay.setHorsesOdds(horses.get(j),odd);
+            odd = log.getHorsesMaxSpeed(j)/vHorses;
+            odd = (1-odd)*RaceDay.N_TRACKS;
+            log.updateHorseOdds(horses.get(j),odd);
         }
-        int choice = rand.nextInt(RaceDay.N_TRACKS+1);
+        int choice = rand.nextInt(RaceDay.N_TRACKS);
         return choice;
         
         

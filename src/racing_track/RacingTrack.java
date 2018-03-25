@@ -49,7 +49,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
         cPosition=log.getHorseMoves(id);
         hPosition=log.getHorseDistance(id);
         cPosition++;
-        hPosition+=rand.nextInt(log.getVelocity(id)-RaceDay.HORSE_MIN_MD)+RaceDay.HORSE_MIN_MD;
+        hPosition+=rand.nextInt(log.getHorsesMaxSpeed(id) -RaceDay.HORSE_MIN_MD)+RaceDay.HORSE_MIN_MD;
         log.updateHorseDistance(id,hPosition);
         log.updateHorseMoves(id,cPosition);
         if(cHorsesMoves%horses.size()==1)
@@ -58,7 +58,12 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
         }
         else
         {
-            wait();
+           try
+           {
+               wait();
+           }catch(InterruptedException ex15){
+                Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex15);
+           }
         }
         
         ///////////////////////////////////////
@@ -99,22 +104,38 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    }
    
    @Override
-   public synchronized int ReportResults(int id)
+   public synchronized int[] ReportResults(int id)
    {
        int rCavalo = log.getHorseMoves(id);
        boolean win = false;
+       int []hMoves={0};
        for(int i =0;i<horses.size();i++)
        {
-           if(rCavalo<log.getHorseMoves(horses.get(i)))
+          hMoves[i]=log.getHorseMoves(horses.get(i));
+       }
+       for (int i = 1; i < hMoves.length; i++){
+			
+	int aux = hMoves[i];
+        int j = i;
+	
+	while ((j > 0) && (hMoves[j-1] > aux)){
+            hMoves[j] = hMoves[j-1];
+            j -= 1;
+	}
+	hMoves[j] = aux;
+                
+       }
+       notifyAll();
+       int[] winners={0};
+       int j=0;
+       for(int i=0;i<hMoves.length;i++)
+       {
+           if(hMoves[i]==hMoves[hMoves.length])
            {
-               win=true;
-           }
-           else
-           {
-               win=false;
-               break;
+               winners[j]=hMoves[i];
            }
        }
+       return winners;
    }
    @Override
    public boolean areThereAnyWinners(int id)
@@ -138,7 +159,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
                wait();
            }catch(InterruptedException ex7)
            {
-                Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex2);
+                Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex7);
 
            }
        }
@@ -146,23 +167,30 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    }
    
    @Override
-   public synchronized boolean haveIWon(int id)
-   {
+   public synchronized boolean haveIWon(int id){//SPECTATORS
+       while(!eRace){
+           try{
+               wait();
+           }catch(InterruptedException ex20){
+               Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex20);
+           }
+       }
        int sbHorse=log.getBetHorse(id);
        boolean win=false;
             for(int i =0;i<horses.size();i++)
             {
-                if(log.getHorseMoves(sbHorse)<log.getHorseMoves(horses.get(i)))
+                if(log.getHorseMoves(sbHorse)<=log.getHorseMoves(horses.get(i)))
                 {
-                    win=true;
+                   win = true;
                 }
                 else
                 {
-                    win=false;
-                    break;
+                   win = false;
+                   break;
+                  
                 }
             }
-       return win;
+            notifyAll();
+            return win;
    }
-    
 }
