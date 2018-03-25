@@ -18,7 +18,6 @@ public class Stable implements IBroker, IHorses {
     private boolean callRace = false;
     private boolean endDay = false;
     private int countCavalos = 0;
-    private int orders = -1;
     private final LinkedList<Integer> horses;
     private final Log log;
     
@@ -31,7 +30,7 @@ public class Stable implements IBroker, IHorses {
     
     @Override
     public synchronized void summonHorsesToPaddock(){
-        while(callRace){
+        while(!callRace){
             try{
                 wait();
             }catch(InterruptedException ex) {
@@ -49,7 +48,7 @@ public class Stable implements IBroker, IHorses {
         {
             horsesReady=true;
             notifyAll();
-            for(int i=0;i<RaceDay.N_TRACKS;i++)
+            for(int i=1;i<=countCavalos;i++)
             {
                 horses.remove(i);
                 countCavalos--;
@@ -69,12 +68,12 @@ public class Stable implements IBroker, IHorses {
         }
         callRace=true;
     }
-    
+    @Override
     public synchronized void proceedToStable(int id){
         this.callRace = false;
         horses.add(id);
         countCavalos++;
-        while(countCavalos<RaceDay.N_TRACKS)
+        while(countCavalos<RaceDay.N_TRACKS-1)
         {
             try{
                 wait();

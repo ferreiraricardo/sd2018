@@ -7,7 +7,6 @@ package betting_centre;
 
 import general_info_repo.Log;
 import general_info_repo.RaceDay;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,20 +16,18 @@ import java.util.logging.Logger;
  * @author ricar
  */
 public class BettingCentre implements ISpectator, IBroker {
-    private final LinkedList<Object> horses;
     private final Log log;
     private int bCount=0;
     private boolean sBets=false;
     
     public BettingCentre(){
         log = Log.getInstance();
-        horses = new LinkedList<>();
     }
     
     @Override
     public synchronized void placeABet(int id)
-    {
-        while(log.getRaceState()!=1 || !sBets)
+    {   
+        while(!sBets)
         {
             try{
                 wait();
@@ -38,10 +35,12 @@ public class BettingCentre implements ISpectator, IBroker {
                 Logger.getLogger(BettingCentre.class.getName()).log(Level.SEVERE, null, ex11);
             }
         }
+        
+      
         double wallet = log.getSpecatorWallet(id);
         if(wallet>RaceDay.SPEC_MIN_BET)
         {
-            bCount++;
+           
             Random rand = new Random();
             int quantity = rand.nextInt(RaceDay.SPEC_MAX_BET-RaceDay.SPEC_MIN_BET)+RaceDay.SPEC_MIN_BET;
             int horseC = rand.nextInt(RaceDay.N_TRACKS)-1;
@@ -52,13 +51,13 @@ public class BettingCentre implements ISpectator, IBroker {
             
         }
         else{
-            bCount++;
-           try{
-                wait();
-            }catch(InterruptedException ex24){
-                Logger.getLogger(BettingCentre.class.getName()).log(Level.SEVERE, null, ex24);
-            }
+            Random rand = new Random();
+           int horseC = rand.nextInt(RaceDay.N_TRACKS)-1;
+           log.updateSpecBetHorse(id, horseC);
+           log.updateSpecBetMoney(id, 0);
         }
+        bCount++;
+        notifyAll();
     }
     @Override
     public synchronized int goCollectTheGains(int id){
@@ -88,10 +87,10 @@ public class BettingCentre implements ISpectator, IBroker {
         }
     }
     @Override
-    public synchronized void acceptTheBets(int id)
+    public synchronized void acceptTheBets()
     {
         sBets=true;
-        while(bCount!=RaceDay.N_SPECTATORS)
+        while(bCount<4)
         {
             try{
                 wait();
@@ -99,8 +98,9 @@ public class BettingCentre implements ISpectator, IBroker {
                 Logger.getLogger(BettingCentre.class.getName()).log(Level.SEVERE, null, ex16);
             }
         }
+        sBets=false;
         log.updateRaceState(2);
-        notifyAll();
+       
     }
     @Override
     public synchronized boolean honnourTheBets(int id){

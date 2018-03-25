@@ -41,19 +41,22 @@ public class Spectator extends Thread {
             switch(this.state){
                 case WAITING_FOR_A_RACE_TO_START:
                     this.paddock.waitForNextRace(id);
-                    this.paddock.goCheckHorses(id);
+                    
                     this.state=SpectatorState.APPRAISING_THE_HORSES;
                     break;
                 case APPRAISING_THE_HORSES:
-                    this.betting.placeABet(id);
+                    this.paddock.goCheckHorses(id);
                     this.state=SpectatorState.PLACING_A_BET;
                     break;
                 case PLACING_A_BET:
-                    this.racing.goWatchTheRace(id);
+                  
+                    this.betting.placeABet(id);
                     this.state = SpectatorState.WATCHING_A_RACE;
+                   
                     break;
                 case WATCHING_A_RACE:
-                    won = this.racing.haveIWon(id);
+                    this.control.goWatchTheRace();
+                    won = this.control.haveIWon(id);
                     if(!won){
                         this.paddock.waitForNextRace(id);
                         this.state=SpectatorState.WAITING_FOR_A_RACE_TO_START;

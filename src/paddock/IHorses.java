@@ -11,7 +11,7 @@ package paddock;
  */
 public interface IHorses {
     
-    public void proceedToStartLine(int id);
+    public void proceedToStartLine();
     
     public void proceedToPaddock(int id);
     

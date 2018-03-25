@@ -30,6 +30,7 @@ public class Horses extends Thread {
         this.stable=stable;
         this.log=Log.getInstance();
         state = HorsesState.AT_THE_STABLE;
+       
         this.setName("Horse"+this.id);
         this.log.initHorses(this.state, this.id, this.md);
         
@@ -45,19 +46,25 @@ public class Horses extends Thread {
         while(!raceOver){
             switch(this.state){
                 case AT_THE_STABLE:
+                    this.stable.proceedToStable(id);
+                    this.stable.waitForProceedToPaddock();
                     this.stable.proceedToPaddock();
                     this.state=HorsesState.AT_THE_PADDOCK;
                     break;
                 case AT_THE_PADDOCK:
-                    this.paddock.proceedToStartLine(id);
+                    this.paddock.proceedToPaddock(id);
+                    this.paddock.proceedToStartLine();
+                    this.racing.proceedToStartLine(id);
                     this.state=HorsesState.AT_THE_START_LINE;
                     break;
                 case AT_THE_START_LINE:
+                    this.log.updateHorseMoves(id, 0);
+                    this.log.updateHorseDistance(id, 0);
                     this.racing.makeAMove(id);
                     this.state=HorsesState.RUNNING;
                     break;
                 case RUNNING:
-                    if(!hasCrossed){
+                    while(!hasCrossed){
                         this.racing.makeAMove(id);
                         hasCrossed=this.racing.hasFinishLineBeenCrossed(id);
                     }

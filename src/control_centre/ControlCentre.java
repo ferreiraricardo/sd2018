@@ -88,6 +88,7 @@ public class ControlCentre implements ISpectator, IBroker {
 
            }
        }
+       notifyAll();
    }
    
 }

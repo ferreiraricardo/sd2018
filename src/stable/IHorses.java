@@ -13,4 +13,8 @@ public interface IHorses {
     
     public void proceedToPaddock();
     
+    public void proceedToStable(int id);
+    
+    public void waitForProceedToPaddock();
+    
 }

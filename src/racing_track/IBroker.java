@@ -11,10 +11,10 @@ package racing_track;
  */
 public interface IBroker {
     
-    public void StartTheRace(int id);
+    public void StartTheRace();
     
-    public int[] ReportResults(int id);
+    public int[] ReportResults();
     
-    public boolean areThereAnyWinners(int id);
+    public boolean areThereAnyWinners();
     
 }

@@ -19,4 +19,6 @@ public interface IHorse {
     
     public void proceedToStable(int id);
     
+    public void proceedToStartLine(int id);
+    
 }

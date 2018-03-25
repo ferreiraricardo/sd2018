@@ -16,7 +16,7 @@ import java.util.Random;
  * @author ricar
  */
 public class Paddock implements ISpectator , IHorses, IBroker{
-    private final LinkedList<Integer> horses;
+    private final int[] horses;
     private final Log log;
     private boolean startRace = false;
     private boolean betsReady = false;
@@ -28,7 +28,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     
     public Paddock(){
         log = Log.getInstance();
-        horses = new LinkedList<>();
+        this.horses=new int[5];
     }
     @Override
     public synchronized int goCheckHorses(int eid)
@@ -44,28 +44,29 @@ public class Paddock implements ISpectator , IHorses, IBroker{
         }
         double odd = 0;
         int vHorses = 0;
-        for(int i=0; i<RaceDay.N_TRACKS;i++)
+        for(int i=1; i<=RaceDay.N_TRACKS;i++)
         {
-            vHorses+=log.getHorsesMaxSpeed(horses.get(i));
+            vHorses+=log.getHorsesMaxSpeed(horses[i]);
         }
-        for(int j=0; j<RaceDay.N_TRACKS;j++)
+        for(int j=1; j<=RaceDay.N_TRACKS;j++)
         {
             odd = log.getHorsesMaxSpeed(j)/vHorses;
             odd = (1-odd)*RaceDay.N_TRACKS;
-            log.updateHorseOdds(horses.get(j),odd);
+            log.updateHorseOdds(horses[j],odd);
         }
         int choice = rand.nextInt(RaceDay.N_TRACKS);
         if(countSpec==RaceDay.N_SPECTATORS)
         {
             startRace=true;
         }
+        notifyAll();
         return choice;
         
         
     }
     
     @Override
-    public synchronized void proceedToStartLine(int id)
+    public synchronized void proceedToStartLine()
     {
         while(!startRace)
         {
@@ -82,7 +83,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     @Override
     public synchronized void proceedToPaddock(int id)
     {
-        horses.add(id);
+        horses[id]=id;
         countCavalos++;
         while(countCavalos<RaceDay.N_TRACKS)
         {
@@ -103,7 +104,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     @Override
     public synchronized void waitForNextRace(int id)
     {
-        while(!startRace)
+        while(!horsesReady)
         {
             try{
                 wait();

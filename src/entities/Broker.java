@@ -32,6 +32,7 @@ public class Broker extends Thread {
     @Override
     public void run(){
         boolean raceOver = false;
+        boolean winners = false;
         
         while(!raceOver){
             switch(this.state){
@@ -41,18 +42,24 @@ public class Broker extends Thread {
                     this.state=BrokerState.ANNOUNCING_NEXT_RACE;
                     break;
                 case ANNOUNCING_NEXT_RACE:
-                    this.betting.acceptTheBets(1);
+                   
                     this.state=BrokerState.WAITING_FOR_BETS;
                     break;
                 case WAITING_FOR_BETS:
-                    this.racing.StartTheRace(1);
+                     this.betting.acceptTheBets();
+                    this.racing.StartTheRace();
                     this.state=BrokerState.SUPERVISING_THE_RACE;
                     break;
                 case SUPERVISING_THE_RACE:
                     //verificacao
-                    this.racing.areThereAnyWinners(1);
-                    this.racing.ReportResults(1);
-                    
+                    System.out.print("1");
+                   while(!winners){
+                       System.out.print("2");
+                       winners=this.racing.areThereAnyWinners();
+                   }
+                   System.out.print("3");
+                    this.racing.ReportResults();
+                    System.out.print("4");
                     this.control.summonHorsesToPaddock();
                     this.state=BrokerState.ANNOUNCING_NEXT_RACE;
                     
