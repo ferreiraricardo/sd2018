@@ -45,14 +45,20 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
                 Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex6);
             }
         }
+        cHorsesMoves++;
+        cPosition=log.getHorseMoves(id);
+        hPosition=log.getHorseDistance(id);
         cPosition++;
-        hPosition+=rand.nextInt(RaceDay.getVelocity(id)-RaceDay.HORSE_MIN_MD)+RaceDay.HORSE_MIN_MD;
-        RaceDay.setHorsesDistance(id,hPosition);
-        RaceDay.setHorsesMoves(id,cPosition);
-        wait();
-        if(cHorsesMove%horses.size()==1)
+        hPosition+=rand.nextInt(log.getVelocity(id)-RaceDay.HORSE_MIN_MD)+RaceDay.HORSE_MIN_MD;
+        log.updateHorseDistance(id,hPosition);
+        log.updateHorseMoves(id,cPosition);
+        if(cHorsesMoves%horses.size()==1)
         {
             notifyAll();
+        }
+        else
+        {
+            wait();
         }
         
         ///////////////////////////////////////
@@ -61,7 +67,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    @Override
    public synchronized boolean hasFinishLineBeenCrossed(int id)
    {
-       int hDistance = RaceDay.getHorsesDistance(id);
+       int hDistance = log.getHorseDistance(id);
        if(hDistance>=RaceDay.RACE_DISTANCE)
        {
            eRace=true;
@@ -95,11 +101,11 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    @Override
    public synchronized int ReportResults(int id)
    {
-       int rCavalo = RaceDay.getHorsesMoves(id);
+       int rCavalo = log.getHorseMoves(id);
        boolean win = false;
        for(int i =0;i<horses.size();i++)
        {
-           if(rCavalo<RaceDay.getHorsesMoves(horses.get(i)))
+           if(rCavalo<log.getHorseMoves(horses.get(i)))
            {
                win=true;
            }
@@ -142,11 +148,11 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    @Override
    public synchronized boolean haveIWon(int id)
    {
-       int sbHorse=RaceDay.getSpecBetHorse(id);
+       int sbHorse=log.getBetHorse(id);
        boolean win=false;
             for(int i =0;i<horses.size();i++)
             {
-                if(RaceDay.getHorsesMoves(sbHorse)<RaceDay.getHorsesMoves(horses.get(i)))
+                if(log.getHorseMoves(sbHorse)<log.getHorseMoves(horses.get(i)))
                 {
                     win=true;
                 }
