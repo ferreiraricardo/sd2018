@@ -62,15 +62,15 @@ public class Log {
             pw.println(head);
             
             
-            head += "  Stat  St0  Am0 St1  Am1 St2  Am2 St3  Am3 RN St0 Len0 St1 Len1 St2 Len2 Sr3 Len3 ";
+            head = "  Stat  St0  Am0 St1  Am1 St2  Am2 St3  Am3 RN St0 Len0 St1 Len1 St2 Len2 Sr3 Len3 ";
             pw.println(head);
             
-            head +="                                                           Race RN Status  ";
+            head ="                                                           Race RN Status  ";
             
             pw.println(head);
             
-            head += " RN Dist ";
-            
+            head = " RN Dist ";
+  
             for(int i=0; i<=3; i++){
                 head += "BS"+Integer.toString(i)+"  BA"+Integer.toString(i)+" ";
             }
@@ -237,6 +237,7 @@ public class Log {
             pw.print(this.raceday.getHorsesSpeed(i));
             pw.print(" ");
         }
-       
+        pw.println();
+       pw.flush();
     }
 }   
