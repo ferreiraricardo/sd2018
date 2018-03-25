@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 public class BettingCentre {
     private final LinkedList<Object> horses;
     private final Log log;
+    private int bCount=0;
     private boolean sBets=false;
     
     public BettingCentre(){
@@ -29,7 +30,7 @@ public class BettingCentre {
     @Override
     public synchronized void placeABet(int id) throws InterruptedException
     {
-        while(log.getRaceState!=1 || !sBets)
+        while(log.getRaceState()!=1 || !sBets)
         {
             try{
                 wait();
@@ -40,6 +41,7 @@ public class BettingCentre {
         double wallet = log.getSpecatorWallet(id);
         if(wallet>RaceDay.SPEC_MIN_BET)
         {
+            bCount++;
             Random rand = new Random();
             int quantity = rand.nextInt(RaceDay.SPEC_MAX_BET-RaceDay.SPEC_MIN_BET)+RaceDay.SPEC_MIN_BET;
             int horseC = rand.nextInt(RaceDay.N_TRACKS)-1;
@@ -47,12 +49,14 @@ public class BettingCentre {
             log.updateSpecBetMoney(id,quantity);
             wallet -= quantity;
             log.updateSpectatorWallet(id, wallet);
+            
         }
         else{
-            
+            bCount++;
             wait();
         }
     }
+    @Override
     public synchronized int goCollectTheGains(int id){
         while(log.getRaceState()!=3)
         {
@@ -64,6 +68,7 @@ public class BettingCentre {
 
             }
         }
+        bCount=0;
         int betHorse= log.getBetHorse(id);
         double quantity= log.getBetMoney(betHorse);
         double odd = log.getHorsesMaxSpeed(betHorse);
@@ -78,11 +83,11 @@ public class BettingCentre {
             return 1;
         }
     }
-    
-    public void acceptTheBets(int id)
+    @Override
+    public synchronized void acceptTheBets(int id)
     {
         sBets=true;
-        while(!betsDone)
+        while(bCount!=RaceDay.N_SPECTATORS)
         {
             try{
                 wait();
@@ -90,10 +95,11 @@ public class BettingCentre {
                 Logger.getLogger(BettingCentre.class.getName()).log(Level.SEVERE, null, ex16);
             }
         }
+        log.updateRaceState(2);
         notifyAll();
     }
-    
-    public boolean honnourTheBets(int id){
+    @Override
+    public synchronized boolean honnourTheBets(int id){
         while(log.getRaceState()!=3)
         {
            try{

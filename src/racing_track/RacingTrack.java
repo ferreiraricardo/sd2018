@@ -37,7 +37,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
     public synchronized void makeAMove(int id)
     {
         Random rand = new Random();
-        while(!sRace)
+        while(!sRace || log.getRaceState()!=2)
         {
             try{
                 wait();
@@ -75,6 +75,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
        int hDistance = log.getHorseDistance(id);
        if(hDistance>=RaceDay.RACE_DISTANCE)
        {
+           log.updateRaceState(3);
            eRace=true;
            return true;
        }
@@ -96,7 +97,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    public synchronized void StartTheRace(int id)
    {
        countCavalos=horses.size();
-       if(countCavalos==RaceDay.N_TRACKS )/////|| RaceDay.bDone()==N_Spectators)
+       if(countCavalos==RaceDay.N_TRACKS || log.getRaceState()==2)
        {
            sRace=true;
            notifyAll();

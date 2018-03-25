@@ -31,7 +31,7 @@ public class Main {
     private static Stable stable;
     private static Log log;
     
-    private static void main(String[] args){
+    public static void main(String[] args){
         int nHorses = RaceDay.N_HORSES;
         int nSpectators = RaceDay.N_SPECTATORS;
         int mb = RaceDay.SPEC_WALLET;

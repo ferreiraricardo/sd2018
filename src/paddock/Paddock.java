@@ -132,5 +132,6 @@ public class Paddock implements ISpectator , IHorses, IBroker{
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE, null, ex4);
             }
         }
+        log.updateRaceState(1);
     }
 }
