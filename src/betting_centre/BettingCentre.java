@@ -54,7 +54,7 @@ public class BettingCentre {
         }
     }
     public synchronized int goCollectTheGains(int id){
-        while(log.getRaceState!=3)
+        while(log.getRaceState()!=3)
         {
             try
             {
@@ -94,7 +94,7 @@ public class BettingCentre {
     }
     
     public boolean honnourTheBets(int id){
-        while(log.getRaceState!=3)
+        while(log.getRaceState()!=3)
         {
            try{
                wait();
