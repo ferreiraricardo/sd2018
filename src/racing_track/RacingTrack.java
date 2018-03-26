@@ -55,42 +55,42 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
         hPosition+=rand.nextInt(log.getHorsesMaxSpeed(id)+1 -RaceDay.HORSE_MIN_MD)+RaceDay.HORSE_MIN_MD;
         log.updateHorseDistance(id,hPosition);
         log.updateHorseMoves(id,cPosition);
-        if(hPosition>RaceDay.RACE_DISTANCE){
-            countWinners++;
-        }
+               
         notifyAll();
-        
-
     }
         
    @Override
    public synchronized boolean hasFinishLineBeenCrossed(int id)
    {       
-       
-           if(countWinners==RaceDay.N_TRACKS)
-           {
-             
-                log.updateRaceState(3);
-               
-                eRace=true;
-               
+           if(log.getHorseDistance(id)>=RaceDay.RACE_DISTANCE){
+            countWinners++;
+            return eRace=true;
+            
+            /* while(countWinners<RaceDay.N_TRACKS){
+                   try {
+                       wait();
+                   } catch (InterruptedException ex35) {
+                       Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex35);
+                   }
+                   
+                    
+             }*/
              
            }
            else
            {
-               eRace=false;
-               
+               return eRace=false; 
            }
-        
-      
-      
-       return eRace;
+         
+           
    }
+   
+
    
    @Override
    public synchronized void proceedToStable(int id)
    {
-      while(!eRace || log.getRaceState()!=3)
+      while(countWinners<4)
       {
           try {
               wait();
@@ -98,7 +98,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
               Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex34);
           }
       }
-    
+      log.updateRaceState(3); 
       notifyAll();
    }
    @Override
@@ -131,7 +131,6 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
        log.updateRaceState(2);
        sRace=true;
        notifyAll();
-       
    }
    
    @Override
@@ -156,7 +155,6 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
 	hMoves[j] = aux;
                 
        }
-       notifyAll();
        int[] winners={0};
        int j=0;
        for(int i=0;i<hMoves.length;i++)
@@ -180,7 +178,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
            }
            return false;
        }
-       notifyAll();
+     
        return true;
       
    }

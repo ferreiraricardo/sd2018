@@ -42,6 +42,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE,null,ex3);       
             }
         }
+        
         double odd = 0;
         int vHorses = 0;
         for(int i=1; i<=RaceDay.N_TRACKS;i++)
@@ -76,8 +77,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE,null,ex30);
             }
         }
-        notifyAll();
-        
+       notifyAll();
     }
     
     @Override
@@ -112,7 +112,6 @@ public class Paddock implements ISpectator , IHorses, IBroker{
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE, null, ex4);
             }
         }
-        notifyAll();
         
     }
 }

@@ -37,6 +37,7 @@ public class Broker extends Thread {
         while(!raceOver){
             switch(this.state){
                 case OPENING_THE_EVENT:
+                    this.log.updateRaceState(0);
                     this.stable.summonHorsesToPaddock();
                     this.log.newRaceDay();
                     this.state=BrokerState.ANNOUNCING_NEXT_RACE;

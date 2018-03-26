@@ -46,6 +46,7 @@ public class Horses extends Thread {
         while(!raceOver){
             switch(this.state){
                 case AT_THE_STABLE:
+                
                     this.stable.proceedToStable(id);
                     this.stable.waitForProceedToPaddock();
                     this.stable.proceedToPaddock();
