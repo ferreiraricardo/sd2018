@@ -11,5 +11,5 @@ package racing_track;
  */
 public interface ISpectator {
     
-    
+    public void goWatchTheRace();
 }

@@ -16,7 +16,7 @@ import java.util.Random;
  * @author ricar
  */
 public class Paddock implements ISpectator , IHorses, IBroker{
-    private final int[] horses;
+    private int[] horses;
     private final Log log;
     private boolean startRace = false;
     private boolean betsReady = false;
@@ -25,9 +25,11 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     private int nHorsesWait=RaceDay.N_TRACKS;
     Random rand = new Random();
     private boolean horsesReady=false;
+    private final LinkedList<Integer> horses1;
     
     public Paddock(){
         log = Log.getInstance();
+        horses1= new LinkedList<>();
         this.horses=new int[5];
     }
     @Override
@@ -69,7 +71,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     @Override
     public synchronized void proceedToStartLine()
     {
-        while(!startRace)
+        while(!this.startRace)
         {
             try{
                 wait();
@@ -77,15 +79,21 @@ public class Paddock implements ISpectator , IHorses, IBroker{
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE,null,ex30);
             }
         }
-       notifyAll();
     }
     
     @Override
     public synchronized void proceedToPaddock(int id)
-    {
+    {   
+        if(countCavalos==RaceDay.N_TRACKS){
+           this.horsesReady=false;
+           this.startRace=false;
+           this.countCavalos=0;
+           this.countSpec=0;
+           this.horses = new int[5];
+          }
         horses[id]=id;
         countCavalos++;
-        while(countCavalos<RaceDay.N_TRACKS)
+        while(countCavalos<=RaceDay.N_TRACKS-1)
         {
             try{
                 wait();
@@ -112,6 +120,5 @@ public class Paddock implements ISpectator , IHorses, IBroker{
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE, null, ex4);
             }
         }
-        
     }
 }

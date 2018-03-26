@@ -137,6 +137,8 @@ public class Log {
         return this.raceday.getHorsesSpeed(id);
     }
     
+ 
+    
     public synchronized void setHorsesState(HorsesState state, int id){
         HorsesState tmp = this.raceday.getHorsesState(id);
         this.raceday.setHorsesState(id, state);

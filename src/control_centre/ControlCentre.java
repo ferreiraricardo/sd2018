@@ -25,20 +25,20 @@ public class ControlCentre implements ISpectator, IBroker {
     
     @Override
    public synchronized boolean haveIWon(int id){//SPECTATORS
-       while(log.getRaceState()!=3){
+       /*while(log.getRaceState()!=3){
            try{
                wait();
            }catch(InterruptedException ex20){
                Logger.getLogger(ControlCentre.class.getName()).log(Level.SEVERE, null, ex20);
            }
-       }
+       }*/
        int sbHorse=log.getBetHorse(id);
        boolean win=false;
        
 
             for(int i =0;i<RaceDay.N_HORSES;i++)
             {
-                if(log.getHorseMoves(sbHorse)<=log.getHorseMoves(i))
+                if(log.getHorseMoves(sbHorse)<=log.getHorseMoves(i+1))
                 {
                     
                    win = true;
@@ -54,17 +54,7 @@ public class ControlCentre implements ISpectator, IBroker {
             return win;
    }
    
-   @Override
-   public synchronized void summonHorsesToPaddock(){
-        while(log.getRaceState()!=3){
-            try{
-                wait();
-            }catch(InterruptedException ex) {
-                Logger.getLogger(ControlCentre.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        notifyAll();
-   }
+
    
    @Override
    public synchronized void entertainTheGuests(){
@@ -81,14 +71,18 @@ public class ControlCentre implements ISpectator, IBroker {
        while(log.getRaceState()!=3)
        {
            try{
+               System.out.print("aqui");
                wait();
+               
            }catch(InterruptedException ex7)
            {
                 Logger.getLogger(ControlCentre.class.getName()).log(Level.SEVERE, null, ex7);
 
            }
        }
+       System.out.print("ali");
        notifyAll();
+    
    }
    
 }

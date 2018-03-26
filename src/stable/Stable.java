@@ -45,37 +45,46 @@ public class Stable implements IBroker, IHorses {
     
     @Override
     public synchronized void waitForProceedToPaddock(){
-          horsesReady=false;
-        if(countCavalos>=4)
-        {
-            horsesReady=true;
-        
-            for(int i=1;i<=countCavalos;i++)
-            {
-                horses.remove(i);
-                countCavalos--;
-            }
-        } 
-    }
+         while(!callRace){
+                 try {
+                     wait();
+                 } catch (InterruptedException ex) {
+                     Logger.getLogger(Stable.class.getName()).log(Level.SEVERE, null, ex);
+                 }
+             }
+         horsesReady=true;
+         notifyAll();
+         }
+    
     
     
     @Override 
     public synchronized void proceedToPaddock(){
-        while(!this.horsesReady || !this.flag){
+        while(!this.flag){
             try{
                 wait();
             }catch(InterruptedException ex) {
                 Logger.getLogger(Stable.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        callRace=true;
+    horses.remove(0);
+    notifyAll();
     }
+    
+    
+    
     @Override
     public synchronized void proceedToStable(int id){
-        this.callRace = false;
+        
+        if(countCavalos==RaceDay.N_TRACKS){
+            this.horsesReady=false;
+            this.callRace=false;
+            this.countCavalos=0;
+            this.flag=false;
+        }
         horses.add(id);
         countCavalos++;
-        while(countCavalos<RaceDay.N_TRACKS-1)
+        while(countCavalos<=RaceDay.N_TRACKS-1)
         {
             try{
                 wait();

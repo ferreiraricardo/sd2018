@@ -29,6 +29,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
     private int countCavalos=0;
     private int cHorsesMoves=0;
     private int countFinish=0;
+    private boolean finish=false;
     private final Log log;
     
     public RacingTrack(){
@@ -98,12 +99,18 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
               Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex34);
           }
       }
-      log.updateRaceState(3); 
+      
       notifyAll();
    }
    @Override
    public synchronized void proceedToStartLine(int id)
    {
+       if(countCavalos==0){
+           countCavalos=0;
+           hAtStartLine=false;
+           sRace=false;
+           countWinners=0;
+       }
        horses.add(id);
        countCavalos++;
        while(countCavalos<RaceDay.N_TRACKS){
@@ -138,10 +145,10 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    {
       
       
-       int []hMoves={0};
-       for(int i =0;i<horses.size();i++)
+       int []hMoves=new int[5];
+       for(int i =1;i<=horses.size();i++)
        {
-          hMoves[i]=log.getHorseMoves(horses.get(i));
+          hMoves[i]=log.getHorseMoves(i);
        }
        for (int i = 1; i < hMoves.length; i++){
 			
@@ -155,31 +162,54 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
 	hMoves[j] = aux;
                 
        }
-       int[] winners={0};
+       int[] winners=new int[5];
        int j=0;
-       for(int i=0;i<hMoves.length;i++)
+       for(int i=1;i<hMoves.length;i++)
        {
-           if(hMoves[i]==hMoves[hMoves.length])
+           if(hMoves[i]==hMoves[hMoves.length-1])
            {
                winners[j]=hMoves[i];
            }
        }
+       log.updateRaceState(3); 
        return winners;
    }
    @Override
    public synchronized boolean areThereAnyWinners()
    {
-       while(!eRace || countFinish<4 )
+      /* while(countFinish<4)
        {
            try{
                wait();
            }catch(InterruptedException ex31){
                Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE,null,ex31);
            }
+       }*/
+       if(countFinish<4){
            return false;
+           
+       }else{
+           
+           return true;
        }
      
-       return true;
       
+   }
+   
+      @Override
+   public synchronized void goWatchTheRace(){
+       while(log.getRaceState()!=3)
+       {
+           try{
+               wait();
+               
+           }catch(InterruptedException ex7)
+           {
+                Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex7);
+
+           }
+       }
+       notifyAll();
+    
    }
 }

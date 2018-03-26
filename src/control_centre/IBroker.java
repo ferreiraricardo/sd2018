@@ -11,8 +11,6 @@ package control_centre;
  */
 public interface IBroker {
     
-    public void summonHorsesToPaddock();
-    
     public void entertainTheGuests();
     
 }
