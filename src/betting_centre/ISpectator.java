@@ -13,7 +13,7 @@ public interface ISpectator {
     
     public void placeABet(int id);
     
-    public int goCollectTheGains(int id);
+    public int goCollectTheGains(int id, boolean win);
     
     
 }

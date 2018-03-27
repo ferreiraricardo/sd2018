@@ -48,7 +48,8 @@ public class Paddock implements ISpectator , IHorses, IBroker{
         for(int j=1; j<=RaceDay.N_TRACKS;j++)
         {
             odd = log.getHorsesMaxSpeed(j)/vHorses;
-            odd = (1-odd)*RaceDay.N_TRACKS;
+            odd = (1-odd);
+            odd = odd+1;
             log.updateHorseOdds(horses[j],odd);
         }
         int choice = rand.nextInt(RaceDay.N_TRACKS);
@@ -73,10 +74,14 @@ public class Paddock implements ISpectator , IHorses, IBroker{
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE,null,ex30);
             }
         }
-        if(countF==4){
+        if(countF==3){
         horsesReady=false;
         countCavalos=0;
+        countF=0;
+        countSpec=0;
+       startRace=false;
         }
+        notifyAll();
     }
     
     @Override
@@ -110,7 +115,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     @Override
     public synchronized void waitForNextRace(int id)
     {   
-        while(!horsesReady)
+        while(!horsesReady || log.getRaceState()!=1)
         {
             try{
                 wait();
@@ -118,5 +123,6 @@ public class Paddock implements ISpectator , IHorses, IBroker{
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE, null, ex4);
             }
         }
+        notifyAll();
     }
 }

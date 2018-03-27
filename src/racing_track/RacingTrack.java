@@ -40,6 +40,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
     @Override
     public synchronized void makeAMove(int id)
     {
+
         Random rand = new Random();
         while(!sRace || log.getRaceState()!=2)
         {
@@ -66,16 +67,6 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
             countWinners++;
             return eRace=true;
             
-            /* while(countWinners<RaceDay.N_TRACKS){
-                   try {
-                       wait();
-                   } catch (InterruptedException ex35) {
-                       Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE, null, ex35);
-                   }
-                   
-                    
-             }*/
-             
            }
            else
            {
@@ -104,7 +95,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    @Override
    public synchronized void proceedToStartLine(int id)
    {
-       if(countCavalos==0){
+       if(countCavalos==4){
            countCavalos=0;
            hAtStartLine=false;
            sRace=false;

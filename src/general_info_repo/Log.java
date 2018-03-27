@@ -137,6 +137,13 @@ public class Log {
         return this.raceday.getHorsesSpeed(id);
     }
     
+    public synchronized int getNoWin(){
+        return this.raceday.getNoWin();
+    }
+    
+    public synchronized void updateNoWin(int n){
+        this.raceday.setNoWin(n);
+    }
  
     
     public synchronized void setHorsesState(HorsesState state, int id){

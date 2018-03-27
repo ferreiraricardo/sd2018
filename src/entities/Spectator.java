@@ -36,6 +36,7 @@ public class Spectator extends Thread {
     public void run(){
         boolean raceOver = false;
         boolean won ;
+        int aux;
         
         while(!raceOver){
             switch(this.state){
@@ -48,29 +49,21 @@ public class Spectator extends Thread {
                     this.state=SpectatorState.PLACING_A_BET;
                     break;
                 case PLACING_A_BET:
-                  
                     this.betting.placeABet(id);
                     this.state = SpectatorState.WATCHING_A_RACE;
-                   
                     break;
                 case WATCHING_A_RACE:
-             
                     this.racing.goWatchTheRace();
                     won = this.control.haveIWon(id);
                     if(!won){
-                        System.out.print("1");
-                        this.paddock.waitForNextRace(id);
-                        
+                        this.betting.goCollectTheGains(id, false);
                         this.state=SpectatorState.WAITING_FOR_A_RACE_TO_START;
                     } else{
-                         System.out.print("2");
                         this.state=SpectatorState.COLLECTING_THE_GAINS;
                     }
-                    
                     break;
                 case COLLECTING_THE_GAINS:
-                    this.betting.goCollectTheGains(id);
-                    this.paddock.waitForNextRace(id);
+                    this.betting.goCollectTheGains(id, true);
                     this.state = SpectatorState.WAITING_FOR_A_RACE_TO_START;
                     break;
                 case CELEBRATING:

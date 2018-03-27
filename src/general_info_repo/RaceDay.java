@@ -17,17 +17,18 @@ public class RaceDay {
     public static final int N_HORSES=4;
     public static final int N_TRACKS=4;
     public static final int N_SPECTATORS=4;
-    public static final int HORSE_MIN_MD = 5;
-    public static final int HORSE_MAX_MD = 20;
-    public static final int SPEC_WALLET = 1000;
+    public static final int HORSE_MIN_MD = 1;
+    public static final int HORSE_MAX_MD = 50;
+    public static final int SPEC_WALLET = 100;
     public static final int SPEC_MAX_BET = 100;
-    public static final int SPEC_MIN_BET = 1;
+    public static final int SPEC_MIN_BET = 99;
     public static final int RACE_DISTANCE = 100;
     
     private BrokerState broker_state;
     private int race_number;
     private int race_state;
     private int n_winners;
+    private int no_win;
     private final HashMap<Integer, HorsesState> horses_state;
     private final HashMap<Integer, SpectatorState> spectator_state;
     private final HashMap<Integer, Integer> horses_position;
@@ -48,6 +49,7 @@ public class RaceDay {
         this.race_number=0;
         this.race_state=0;
         this.n_winners=0;
+        this.no_win=0;
         this.horses_state=new HashMap<>();
         this.spectator_state=new HashMap<>();
         this.horses_position=new HashMap<>();
@@ -71,6 +73,14 @@ public class RaceDay {
     
     public synchronized void setBrokerState(BrokerState state){
         this.broker_state=state;
+    }
+    
+    public synchronized void setNoWin(int n){
+        this.no_win=n;
+    }
+    
+    public synchronized int getNoWin(){
+        return this.no_win;
     }
     
     public synchronized void setHorsesState(int id, HorsesState state){

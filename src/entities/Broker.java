@@ -43,27 +43,25 @@ public class Broker extends Thread {
                     break;
                 case ANNOUNCING_NEXT_RACE:
                     this.log.updateRaceState(0);
+                    this.log.updateNwinners(0);
                     this.stable.summonHorsesToPaddock();
                     this.state=BrokerState.WAITING_FOR_BETS;
                     break;
                 case WAITING_FOR_BETS:
                      this.betting.acceptTheBets();
-                    this.racing.StartTheRace();
                     this.state=BrokerState.SUPERVISING_THE_RACE;
                     break;
                 case SUPERVISING_THE_RACE:  
-                   while(!winners){
+                    this.racing.StartTheRace();
+                    winners=false;
+                    while(!winners){
                        winners=this.racing.areThereAnyWinners();
-                       System.out.print("0");
                    }
-                   System.out.print("1");
                     this.control.ReportResults();
-                    System.out.print("2");
                     this.state=BrokerState.SETTLING_ACCOUNTS;
                     break;
                 case SETTLING_ACCOUNTS:
                     this.betting.honnourTheBets(1);
-                     System.out.print("3");
                     this.state=BrokerState.ANNOUNCING_NEXT_RACE;
                     //this.control.entertainTheGuests();
                     break;

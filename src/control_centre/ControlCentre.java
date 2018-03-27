@@ -35,14 +35,14 @@ public class ControlCentre implements ISpectator, IBroker {
            }
        }*/
        int sbHorse=log.getBetHorse(id);
+       if(sbHorse==-1){
+           return false;
+       }
        boolean win=false;
-       
-     for(int i=0; i<list.length; i++){
-         System.out.println("list-"+i+" "+list[i]);
-     }
            
                 if(log.getHorseMoves(sbHorse)==list[1])
                 {
+                    System.out.print(" GANHEI ");
                    int i=0;
                    win = true;
                    i=log.getNwinners();
@@ -51,6 +51,7 @@ public class ControlCentre implements ISpectator, IBroker {
                 }
                 else
                 {
+                    System.out.print(" PERDI ");
                    win = false;
                   
                 }

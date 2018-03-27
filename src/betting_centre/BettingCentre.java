@@ -17,12 +17,15 @@ import java.util.logging.Logger;
  */
 public class BettingCentre implements ISpectator, IBroker {
     private final Log log;
-    private int bCount, cCount=0;
+    private int bCount, cCount, lCount;
     private boolean sBets=false;
     private boolean sPay, ePay =false;
     
     public BettingCentre(){
         log = Log.getInstance();
+        this.cCount=0;
+        this.bCount=0;
+        this.lCount=0;
     }
     
     @Override
@@ -44,8 +47,10 @@ public class BettingCentre implements ISpectator, IBroker {
            
             Random rand = new Random();
             int quantity = rand.nextInt(RaceDay.SPEC_MAX_BET-RaceDay.SPEC_MIN_BET)+RaceDay.SPEC_MIN_BET;
+            if(quantity>wallet){
+                quantity=(int)wallet;
+            }
             int horseC = rand.nextInt(RaceDay.N_TRACKS)+1;
-            //System.out.println("id-"+horseC);
             log.updateSpecBetHorse(id,horseC);
             log.updateSpecBetMoney(id,quantity);
             wallet -= quantity;
@@ -53,17 +58,17 @@ public class BettingCentre implements ISpectator, IBroker {
             
         }
         else{
-            Random rand = new Random();
-           int horseC = rand.nextInt(RaceDay.N_TRACKS)-1;
-           log.updateSpecBetHorse(id, horseC);
+           Random rand = new Random();
+           int horseC = rand.nextInt(RaceDay.N_TRACKS)+1;
+           log.updateSpecBetHorse(id, -1);
            log.updateSpecBetMoney(id, 0);
         }
         bCount++;
         notifyAll();
     }
     @Override
-    public synchronized int goCollectTheGains(int id){
-        while(!ePay)
+    public synchronized int goCollectTheGains(int id, boolean win){
+      /*  while(!ePay)
         {
             try
             {
@@ -72,21 +77,33 @@ public class BettingCentre implements ISpectator, IBroker {
                 Logger.getLogger(BettingCentre.class.getName()).log(Level.SEVERE, null, ex10);
 
             }
-        }
+        }*/
+       
+      if(win){
         int betHorse= log.getBetHorse(id);
         double quantity= log.getBetMoney(betHorse);
-        double odd = log.getHorsesMaxSpeed(betHorse);
+        double odd = log.getHorseOdds(betHorse);
         double wallet = log.getSpecatorWallet(id);
         wallet += odd*quantity;
         log.updateSpectatorWallet(id, wallet);
-        System.out.print("ali");
-        cCount++;
-        if(cCount==log.getNwinners()-1){
-            System.out.print("aqui");
-            bCount=0;
+        cCount++;        
+        if(cCount==log.getNwinners() && cCount+lCount==bCount){
+           
+            lCount=0;
+            cCount=0;
             sPay=true;
         }
-        notifyAll();
+       
+      }else{
+          lCount++;
+          if(lCount+cCount==bCount){
+            sPay=true;
+            lCount=0;
+            cCount=0;
+          
+          }
+      }
+      notifyAll();
         if(log.getSpecatorWallet(id)<RaceDay.SPEC_MIN_BET){
             return 0;
         }
@@ -99,7 +116,10 @@ public class BettingCentre implements ISpectator, IBroker {
     public synchronized void acceptTheBets()
     {   ePay=false;
         sPay=false;
+        cCount=0;
         sBets=true;
+        bCount=0;
+        lCount=0;
         while(bCount<4)
         {
             try{
@@ -116,6 +136,8 @@ public class BettingCentre implements ISpectator, IBroker {
     @Override
     public synchronized boolean honnourTheBets(int id){
         ePay=true;
+        sPay=false;
+   
         while(!sPay)
         {
            try{
