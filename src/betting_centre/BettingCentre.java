@@ -17,8 +17,9 @@ import java.util.logging.Logger;
  */
 public class BettingCentre implements ISpectator, IBroker {
     private final Log log;
-    private int bCount=0;
+    private int bCount, cCount=0;
     private boolean sBets=false;
+    private boolean sPay, ePay =false;
     
     public BettingCentre(){
         log = Log.getInstance();
@@ -43,7 +44,8 @@ public class BettingCentre implements ISpectator, IBroker {
            
             Random rand = new Random();
             int quantity = rand.nextInt(RaceDay.SPEC_MAX_BET-RaceDay.SPEC_MIN_BET)+RaceDay.SPEC_MIN_BET;
-            int horseC = rand.nextInt(RaceDay.N_TRACKS)-1;
+            int horseC = rand.nextInt(RaceDay.N_TRACKS)+1;
+            //System.out.println("id-"+horseC);
             log.updateSpecBetHorse(id,horseC);
             log.updateSpecBetMoney(id,quantity);
             wallet -= quantity;
@@ -61,7 +63,7 @@ public class BettingCentre implements ISpectator, IBroker {
     }
     @Override
     public synchronized int goCollectTheGains(int id){
-        while(log.getRaceState()!=3)
+        while(!ePay)
         {
             try
             {
@@ -71,13 +73,20 @@ public class BettingCentre implements ISpectator, IBroker {
 
             }
         }
-        bCount=0;
         int betHorse= log.getBetHorse(id);
         double quantity= log.getBetMoney(betHorse);
         double odd = log.getHorsesMaxSpeed(betHorse);
         double wallet = log.getSpecatorWallet(id);
         wallet += odd*quantity;
         log.updateSpectatorWallet(id, wallet);
+        System.out.print("ali");
+        cCount++;
+        if(cCount==log.getNwinners()-1){
+            System.out.print("aqui");
+            bCount=0;
+            sPay=true;
+        }
+        notifyAll();
         if(log.getSpecatorWallet(id)<RaceDay.SPEC_MIN_BET){
             return 0;
         }
@@ -88,7 +97,8 @@ public class BettingCentre implements ISpectator, IBroker {
     }
     @Override
     public synchronized void acceptTheBets()
-    {
+    {   ePay=false;
+        sPay=false;
         sBets=true;
         while(bCount<4)
         {
@@ -100,11 +110,13 @@ public class BettingCentre implements ISpectator, IBroker {
         }
         sBets=false;
         log.updateRaceState(2);
+        notifyAll();
        
     }
     @Override
     public synchronized boolean honnourTheBets(int id){
-        while(log.getRaceState()!=3)
+        ePay=true;
+        while(!sPay)
         {
            try{
                wait();

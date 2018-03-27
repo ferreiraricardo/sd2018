@@ -22,6 +22,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     private boolean betsReady = false;
     private int countCavalos =0;
     private int countSpec =0;
+    private int countF=0;
     private int nHorsesWait=RaceDay.N_TRACKS;
     Random rand = new Random();
     private boolean horsesReady=false;
@@ -31,20 +32,13 @@ public class Paddock implements ISpectator , IHorses, IBroker{
         log = Log.getInstance();
         horses1= new LinkedList<>();
         this.horses=new int[5];
+       
     }
     @Override
     public synchronized int goCheckHorses(int eid)
     {
         countSpec++;
-        while(!horsesReady)
-        {
-            try{
-                wait();
-            }catch(InterruptedException ex3){
-                Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE,null,ex3);       
-            }
-        }
-        
+
         double odd = 0;
         int vHorses = 0;
         for(int i=1; i<=RaceDay.N_TRACKS;i++)
@@ -70,7 +64,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     
     @Override
     public synchronized void proceedToStartLine()
-    {
+    {   countF++;
         while(!this.startRace)
         {
             try{
@@ -78,6 +72,10 @@ public class Paddock implements ISpectator , IHorses, IBroker{
             }catch(InterruptedException ex30){
                 Logger.getLogger(Paddock.class.getName()).log(Level.SEVERE,null,ex30);
             }
+        }
+        if(countF==4){
+        horsesReady=false;
+        countCavalos=0;
         }
     }
     
@@ -111,7 +109,7 @@ public class Paddock implements ISpectator , IHorses, IBroker{
     
     @Override
     public synchronized void waitForNextRace(int id)
-    {
+    {   
         while(!horsesReady)
         {
             try{

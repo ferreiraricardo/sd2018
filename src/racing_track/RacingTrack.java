@@ -55,8 +55,7 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
         cPosition++;
         hPosition+=rand.nextInt(log.getHorsesMaxSpeed(id)+1 -RaceDay.HORSE_MIN_MD)+RaceDay.HORSE_MIN_MD;
         log.updateHorseDistance(id,hPosition);
-        log.updateHorseMoves(id,cPosition);
-               
+        log.updateHorseMoves(id,cPosition);        
         notifyAll();
     }
         
@@ -143,8 +142,6 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    @Override
    public synchronized int[] ReportResults()
    {
-      
-      
        int []hMoves=new int[5];
        for(int i =1;i<=horses.size();i++)
        {
@@ -177,21 +174,26 @@ public class RacingTrack implements IBroker,IHorse,ISpectator{
    @Override
    public synchronized boolean areThereAnyWinners()
    {
-      /* while(countFinish<4)
+       while(countWinners<4)
        {
            try{
                wait();
            }catch(InterruptedException ex31){
                Logger.getLogger(RacingTrack.class.getName()).log(Level.SEVERE,null,ex31);
            }
-       }*/
-       if(countFinish<4){
+           return false;
+           
+       }
+       log.updateRaceState(3);
+       notifyAll();
+       return true;
+      /* if(countWinners<4){
            return false;
            
        }else{
            
            return true;
-       }
+       }*/
      
       
    }

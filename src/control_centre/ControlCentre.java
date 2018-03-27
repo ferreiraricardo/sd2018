@@ -16,16 +16,18 @@ import java.util.LinkedList;
 
 public class ControlCentre implements ISpectator, IBroker {
     private final Log log;
+    private int[] list;
     
     
     public ControlCentre(){
         log=Log.getInstance();
+        list=new int[5];
      
     }
     
     @Override
    public synchronized boolean haveIWon(int id){//SPECTATORS
-       /*while(log.getRaceState()!=3){
+    /*   while(log.getRaceState()!=3){
            try{
                wait();
            }catch(InterruptedException ex20){
@@ -35,23 +37,51 @@ public class ControlCentre implements ISpectator, IBroker {
        int sbHorse=log.getBetHorse(id);
        boolean win=false;
        
-
-            for(int i =0;i<RaceDay.N_HORSES;i++)
-            {
-                if(log.getHorseMoves(sbHorse)<=log.getHorseMoves(i+1))
+     for(int i=0; i<list.length; i++){
+         System.out.println("list-"+i+" "+list[i]);
+     }
+           
+                if(log.getHorseMoves(sbHorse)==list[1])
                 {
-                    
+                   int i=0;
                    win = true;
+                   i=log.getNwinners();
+                   i++;
+                   log.updateNwinners(i);
                 }
                 else
                 {
                    win = false;
-                   break;
                   
                 }
-            }
-            notifyAll();
+           
             return win;
+   }
+   
+   
+    @Override
+   public synchronized int[] ReportResults()
+   {
+       int []hMoves=new int[5];
+       for(int i =1;i<=4;i++)
+       {
+          hMoves[i]=log.getHorseMoves(i);
+       }
+       for (int i = 1; i < hMoves.length; i++){
+			
+	int aux = hMoves[i];
+        int j = i;
+	
+	while ((j > 0) && (hMoves[j-1] > aux)){
+            hMoves[j] = hMoves[j-1];
+            j -= 1;
+	}
+	hMoves[j] = aux;
+                
+       }
+       log.updateRaceState(3); 
+       list=hMoves;
+       return hMoves;
    }
    
 

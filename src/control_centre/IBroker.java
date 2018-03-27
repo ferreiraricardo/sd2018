@@ -10,7 +10,7 @@ package control_centre;
  * @author ricar
  */
 public interface IBroker {
-    
+    public int[] ReportResults();
     public void entertainTheGuests();
     
 }

@@ -38,12 +38,12 @@ public class Broker extends Thread {
             switch(this.state){
                 case OPENING_THE_EVENT:
                     this.log.updateRaceState(0);
-                    this.stable.summonHorsesToPaddock();
                     this.log.newRaceDay();
                     this.state=BrokerState.ANNOUNCING_NEXT_RACE;
                     break;
                 case ANNOUNCING_NEXT_RACE:
-                   
+                    this.log.updateRaceState(0);
+                    this.stable.summonHorsesToPaddock();
                     this.state=BrokerState.WAITING_FOR_BETS;
                     break;
                 case WAITING_FOR_BETS:
@@ -51,31 +51,21 @@ public class Broker extends Thread {
                     this.racing.StartTheRace();
                     this.state=BrokerState.SUPERVISING_THE_RACE;
                     break;
-                case SUPERVISING_THE_RACE:
-                    //verificacao
-                    
+                case SUPERVISING_THE_RACE:  
                    while(!winners){
                        winners=this.racing.areThereAnyWinners();
+                       System.out.print("0");
                    }
-                    this.racing.ReportResults();
-                    this.stable.summonHorsesToPaddock();
-                    this.state=BrokerState.ANNOUNCING_NEXT_RACE;
-                    
-                    //caso haja vencedores
-                    this.betting.honnourTheBets(1);
+                   System.out.print("1");
+                    this.control.ReportResults();
+                    System.out.print("2");
                     this.state=BrokerState.SETTLING_ACCOUNTS;
-                    //caso nao haja vencedores
-                   // this.control.entertainTheGuests();
-                    //this.state=BrokerState.PLAYING_HOST_AT_THE_BAR;
-                    
                     break;
                 case SETTLING_ACCOUNTS:
-                    
-                    this.stable.summonHorsesToPaddock();
+                    this.betting.honnourTheBets(1);
+                     System.out.print("3");
                     this.state=BrokerState.ANNOUNCING_NEXT_RACE;
-                    
-                    this.control.entertainTheGuests();
-                    //this.state=BrokerState.PLAYING_HOST_AT_THE_BAR;
+                    //this.control.entertainTheGuests();
                     break;
                 case PLAYING_HOST_AT_THE_BAR:
                     raceOver = true;

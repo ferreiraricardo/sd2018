@@ -27,6 +27,7 @@ public class RaceDay {
     private BrokerState broker_state;
     private int race_number;
     private int race_state;
+    private int n_winners;
     private final HashMap<Integer, HorsesState> horses_state;
     private final HashMap<Integer, SpectatorState> spectator_state;
     private final HashMap<Integer, Integer> horses_position;
@@ -46,6 +47,7 @@ public class RaceDay {
     private RaceDay(){
         this.race_number=0;
         this.race_state=0;
+        this.n_winners=0;
         this.horses_state=new HashMap<>();
         this.spectator_state=new HashMap<>();
         this.horses_position=new HashMap<>();
@@ -86,6 +88,14 @@ public class RaceDay {
             this.spectator_state.put(id, state);
         }
         
+    }
+    
+    public synchronized void setNwinners(int n){
+        this.n_winners=n;
+    }
+    
+    public synchronized int getNwinners(){
+        return this.n_winners;
     }
     
     public synchronized void setHorsesPosition(int id, int pos){

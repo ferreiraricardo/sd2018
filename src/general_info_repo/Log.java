@@ -198,6 +198,21 @@ public class Log {
         this.raceday.setHorseMoves(id, moves);
     }
     
+    public synchronized void updateHorsePosition(int id, int pos){
+        this.raceday.setHorsesPosition(id, pos);
+    }
+    
+    public synchronized int getHorsePosition(int id){
+        return this.raceday.getHorsesPosition(id);
+    }
+    
+    public synchronized int getNwinners(){
+        return this.raceday.getNwinners();
+    }
+    
+    public synchronized void updateNwinners(int n){
+        this.raceday.setNwinners(n);
+    }
     
     public synchronized int getHorseDistance(int id){
         return this.raceday.getHorseDistance(id);
