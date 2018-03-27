@@ -38,13 +38,13 @@ public enum BrokerState {
     SETTLING_ACCOUNTS{
         @Override
         public String toString(){
-            return "SA";
+            return "SAC";
         }
     },
     PLAYING_HOST_AT_THE_BAR{
         @Override
         public String toString(){
-            return "PHATB";
+            return "PHB";
         }
     }
     

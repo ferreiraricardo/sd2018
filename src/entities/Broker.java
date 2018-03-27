@@ -33,7 +33,7 @@ public class Broker extends Thread {
     public void run(){
         boolean raceOver = false;
         boolean winners = false;
-        
+        int aux;
         while(!raceOver){
             switch(this.state){
                 case OPENING_THE_EVENT:
@@ -42,6 +42,8 @@ public class Broker extends Thread {
                     this.state=BrokerState.ANNOUNCING_NEXT_RACE;
                     break;
                 case ANNOUNCING_NEXT_RACE:
+                    aux=this.log.getRaceNumber();
+                    this.log.updateRaceNumber(aux+1);
                     this.log.updateRaceState(0);
                     this.log.updateNwinners(0);
                     this.stable.summonHorsesToPaddock();

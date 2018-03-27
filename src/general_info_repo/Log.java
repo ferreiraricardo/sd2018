@@ -57,7 +57,7 @@ public class Log {
             pw = new PrintWriter(log);
             pw.println("                            AFTERNOON AT THE RACE TRACK - Description of the internal state of the problem");
             
-            String head = "MAN/BRK              SPECTATOR/BETTER              HORSE/JOCKEY PAIR at RACE RN";
+            String head = "   MAN/BRK              SPECTATOR/BETTER              HORSE/JOCKEY PAIR at RACE RN";
            
             pw.println(head);
             
@@ -241,15 +241,25 @@ public class Log {
         return this.raceday.getRaceState();
     }
     
+     public synchronized void updateRaceNumber(int s){
+        this.raceday.setRaceNumber(s);
+    }
+    
+    public synchronized int getRaceNumber(){
+        return this.raceday.getRaceNumber();
+    }
+    
+    
     private void printStatesLine(){
-        pw.print(this.raceday.getBrokerState());
         pw.print("  ");
+        pw.print(this.raceday.getBrokerState());
+        pw.print("   ");
         
         for(int i=1; i<=4; i++){
             pw.print(this.raceday.getSpectatorState(i));
-            pw.print(" ");
-            pw.print(this.raceday.getSpectatorWallet(i));
             pw.print("  ");
+            pw.print(this.raceday.getSpectatorWallet(i));
+            pw.print(" ");
         }
         
         pw.print(this.raceday.getRaceNumber());

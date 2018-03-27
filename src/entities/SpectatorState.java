@@ -13,7 +13,7 @@ public enum SpectatorState {
     WAITING_FOR_A_RACE_TO_START{
         @Override
         public String toString(){
-            return "WFARTS";
+            return "WRS";
         }
     },
     APPRAISING_THE_HORSES{
@@ -43,7 +43,7 @@ public enum SpectatorState {
     CELEBRATING{
         @Override
         public String toString(){
-            return "C";
+            return "CEL";
         }
     }
     

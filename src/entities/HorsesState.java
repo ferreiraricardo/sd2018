@@ -25,19 +25,19 @@ public enum HorsesState {
     AT_THE_START_LINE{
         @Override
         public String toString(){
-            return "ATSL";
+            return "ASL";
         }
     },
     RUNNING{
         @Override
         public String toString(){
-           return "R";
+           return "RUN";
         }
     },
     AT_THE_FINISH_LINE{
         @Override
         public String toString(){
-            return "ATFL";
+            return "AFL";
         }
     }
     
